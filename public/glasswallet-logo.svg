@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 50">
+  <!-- Green geometric shapes - compact and properly positioned -->
+  <g transform="translate(0, 10)">
+    <!-- First green shape (brighter) -->
+    <path fill="#00FF00" d="M0 10 L25 0 L35 15 L10 25 Z"/>
+    <!-- Second green shape (darker) positioned to avoid overlap -->
+    <path fill="#228B22" d="M15 20 L40 10 L50 25 L25 35 Z"/>
+  </g>
+  
+  <!-- GlassWallet.io text positioned with proper spacing -->
+  <text x="60" y="35" fill="#E5E5E5" font-family="Inter, system-ui, Arial, sans-serif" font-size="26" font-weight="300">GlassWallet.io</text>
+</svg>

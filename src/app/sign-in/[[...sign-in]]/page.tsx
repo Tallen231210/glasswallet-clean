@@ -1,0 +1,83 @@
+'use client';
+
+
+// Disable static generation for this page
+export const dynamic = 'force-dynamic';import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { GlassCard, NeonButton } from '@/components/ui';
+
+// Only import Clerk in production
+let SignIn: any = null;
+if (process.env.NODE_ENV === 'production') {
+  SignIn = require('@clerk/nextjs').SignIn;
+}
+
+export default function SignInPage() {
+  const isDevelopment = process.env.NODE_ENV === 'development';
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isDevelopment) {
+      // Auto-redirect to dashboard in development mode since we're auto-signed in
+      router.push('/dashboard');
+    }
+  }, [isDevelopment, router]);
+
+  if (isDevelopment) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="absolute inset-0 bg-black" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-neon-green/5 via-transparent to-transparent" />
+        <div className="relative z-10">
+          <GlassCard className="p-8 text-center">
+            <h2 className="text-2xl font-bold text-white mb-4">Development Mode</h2>
+            <p className="text-gray-300 mb-6">You're automatically signed in during development.</p>
+            <NeonButton onClick={() => router.push('/dashboard')}>
+              Go to Dashboard
+            </NeonButton>
+          </GlassCard>
+        </div>
+      </div>
+    );
+  }
+  return (
+    <div className="min-h-screen flex items-center justify-center p-4">
+      {/* Background with glassmorphic gradient */}
+      <div className="absolute inset-0 bg-black" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-neon-green/5 via-transparent to-transparent" />
+      
+      <GlassCard className="w-full max-w-md p-8 neon-border">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-neon-green bg-clip-text text-transparent">
+            Welcome to GlassWallet
+          </h1>
+          <p className="text-gray-400 mt-2">
+            Sign in to access your credit data platform
+          </p>
+        </div>
+        
+        <div className="flex justify-center">
+          <SignIn 
+            appearance={{
+              elements: {
+                rootBox: "w-full",
+                card: "bg-transparent shadow-none border-0",
+                headerTitle: "text-white",
+                headerSubtitle: "text-gray-400",
+                socialButtonsBlockButton: "glass-card glass-card-hover",
+                formButtonPrimary: "neon-button",
+                formFieldInput: "glass-card text-white placeholder-gray-400 border-white/20",
+                identityPreviewEditButton: "text-neon-green hover:text-neon-green/80",
+                formFieldLabel: "text-gray-300",
+                dividerLine: "bg-white/20",
+                dividerText: "text-gray-400",
+                footerActionLink: "text-neon-green hover:text-neon-green/80",
+              }
+            }}
+            redirectUrl="/dashboard"
+          />
+        </div>
+      </GlassCard>
+    </div>
+  );
+}

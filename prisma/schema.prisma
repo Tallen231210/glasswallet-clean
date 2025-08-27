@@ -1,0 +1,194 @@
+// GlassWallet Database Schema
+// Credit Data API Integration Platform with Pixel Optimization
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// User Model (Clerk Integration)
+model User {
+  id                String   @id @default(cuid())
+  clerkUserId       String   @unique
+  email             String   @unique
+  firstName         String
+  lastName          String
+  subscriptionPlan  String   @default("free") // free, pro, enterprise
+  creditBalance     Int      @default(0)
+  organizationId    String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relationships
+  leads             Lead[]
+  creditTransactions CreditTransaction[]
+  pixelConnections  PixelConnection[]
+  autoTaggingRules  AutoTaggingRule[]
+  webhooks          Webhook[]
+
+  @@map("users")
+  @@index([clerkUserId])
+  @@index([email])
+  @@index([organizationId])
+}
+
+// Lead Model (Core Business Entity)
+model Lead {
+  id               String    @id @default(cuid())
+  userId           String
+  firstName        String
+  lastName         String
+  email            String
+  phone            String?
+  ssnHash          String?   // Encrypted SSN for FCRA compliance
+  creditScore      Int?
+  incomeEstimate   Int?      // In cents
+  address          String?
+  city             String?
+  state            String?
+  zipCode          String?
+  consentGiven     Boolean   @default(false)
+  dataRetentionDate DateTime?
+  processedAt      DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  // Relationships
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  creditTransactions CreditTransaction[]
+  leadTags         LeadTag[]
+
+  @@map("leads")
+  @@index([userId])
+  @@index([email])
+  @@index([creditScore])
+  @@index([processedAt])
+  @@index([createdAt])
+}
+
+// Credit Transaction Model (Audit Trail)
+model CreditTransaction {
+  id                    String   @id @default(cuid())
+  userId                String
+  leadId                String?
+  transactionType       String   // pull, purchase, refund
+  costInCents           Int
+  creditBalanceBefore   Int
+  creditBalanceAfter    Int
+  crsTransactionId      String?  // External CRS API transaction ID
+  status                String   @default("completed") // pending, completed, failed, refunded
+  metadata              Json?    // Additional transaction data
+  createdAt             DateTime @default(now())
+
+  // Relationships
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lead                  Lead?    @relation(fields: [leadId], references: [id], onDelete: SetNull)
+
+  @@map("credit_transactions")
+  @@index([userId])
+  @@index([leadId])
+  @@index([transactionType])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// Pixel Connection Model (OAuth Integration)
+model PixelConnection {
+  id                String    @id @default(cuid())
+  userId            String
+  platformType      String    // META, GOOGLE_ADS, TIKTOK
+  connectionName    String    // User-defined name
+  connectionStatus  String    @default("active") // active, inactive, expired, error
+  oauthTokens       Json      // Encrypted OAuth tokens and refresh tokens
+  pixelId           String?   // Platform-specific pixel/audience ID
+  syncSettings      Json?     // Platform-specific sync configuration
+  lastSyncAt        DateTime?
+  lastSyncStatus    String?   // success, failed, partial
+  syncStats         Json?     // Sync statistics and metrics
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relationships
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  leadTags          LeadTag[] @relation("PixelSync")
+
+  @@map("pixel_connections")
+  @@index([userId])
+  @@index([platformType])
+  @@index([connectionStatus])
+  @@index([lastSyncAt])
+  @@unique([userId, platformType, pixelId])
+}
+
+// Lead Tag Model (Quality Management)
+model LeadTag {
+  id              String   @id @default(cuid())
+  leadId          String
+  tagType         String   // whitelist, blacklist, qualified, unqualified
+  tagReason       String   // Manual, auto-rule, credit-score, income-threshold, etc.
+  taggedAt        DateTime @default(now())
+  taggedBy        String?  // User ID if manually tagged
+  ruleId          String?  // Auto-tagging rule ID if auto-tagged
+  syncedToPixels  Boolean  @default(false)
+  pixelSyncAt     DateTime?
+
+  // Relationships
+  lead            Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  rule            AutoTaggingRule? @relation(fields: [ruleId], references: [id], onDelete: SetNull)
+  pixelConnections PixelConnection[] @relation("PixelSync")
+
+  @@map("lead_tags")
+  @@index([leadId])
+  @@index([tagType])
+  @@index([taggedAt])
+  @@index([syncedToPixels])
+  @@unique([leadId, tagType]) // Prevent duplicate tag types per lead
+}
+
+// Auto-Tagging Rule Model (Rules Engine)
+model AutoTaggingRule {
+  id              String   @id @default(cuid())
+  userId          String
+  ruleName        String
+  isActive        Boolean  @default(true)
+  conditions      Json     // Rule conditions (credit score, income, etc.)
+  actions         Json     // Actions to take (tag type, pixel sync, etc.)
+  priority        Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relationships
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  leadTags        LeadTag[]
+
+  @@map("auto_tagging_rules")
+  @@index([userId])
+  @@index([isActive])
+  @@index([priority])
+}
+
+// Webhook Model (External Integrations)
+model Webhook {
+  id              String   @id @default(cuid())
+  userId          String
+  webhookUrl      String
+  events          String[] // lead.processed, lead.tagged, pixel.synced, etc.
+  isActive        Boolean  @default(true)
+  secret          String?  // Webhook signature secret
+  lastTriggeredAt DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relationships
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("webhooks")
+  @@index([userId])
+  @@index([isActive])
+}

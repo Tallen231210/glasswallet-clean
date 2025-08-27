@@ -1,0 +1,179 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import "tailwindcss";
+
+/* GlassWallet Design System Variables */
+:root {
+  /* Primary Colors */
+  --neon-green: #00ff88;
+  --electric-green: #10b981;
+  --bright-red: #ef4444;
+  
+  /* Background Gradients - Modern Navy to Purple */
+  --deep-navy-start: #0c1426;
+  --deep-navy-end: #1a0b2e;
+  --gradient-accent: #2d1b47;
+  
+  /* Glass Card Properties */
+  --glass-background: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: rgba(0, 0, 0, 0.3);
+  
+  /* Text Colors */
+  --text-primary: #ffffff;
+  --text-secondary: #e2e8f0;
+  --text-muted: #94a3b8;
+  
+  /* Neon Effects */
+  --neon-glow: rgba(0, 255, 136, 0.3);
+  --neon-border: rgba(0, 255, 136, 0.5);
+}
+
+@theme inline {
+  /* Color System */
+  --color-neon-green: var(--neon-green);
+  --color-electric-green: var(--electric-green);
+  --color-bright-red: var(--bright-red);
+  --color-deep-navy-start: var(--deep-navy-start);
+  --color-deep-navy-end: var(--deep-navy-end);
+  --color-glass-background: var(--glass-background);
+  --color-glass-border: var(--glass-border);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  
+  /* Typography */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  
+  /* Glass Effects */
+  --backdrop-blur-glass: 10px;
+  --glass-shadow: 0 8px 32px var(--glass-shadow);
+  --neon-glow-shadow: 0 0 20px var(--neon-glow);
+}
+
+/* Global Styles */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  /* Pure black background */
+  background: #000000;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  position: relative;
+}
+
+/* Subtle background animation */
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Add sophisticated background patterns - disabled for pure black background */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Enhanced Glass Card Utility Classes */
+.glass-card {
+  background: var(--glass-background);
+  backdrop-filter: blur(var(--backdrop-blur-glass));
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  box-shadow: var(--glass-shadow), 
+              0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle shimmer effect on glass cards */
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(255, 255, 255, 0.03) 49%,
+    rgba(255, 255, 255, 0.06) 50%,
+    rgba(255, 255, 255, 0.03) 51%,
+    transparent
+  );
+  transform: translateX(-100%) translateY(-100%) rotate(45deg);
+  transition: transform 0.8s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.glass-card:hover::before {
+  transform: translateX(100%) translateY(100%) rotate(45deg);
+}
+
+.glass-card-hover {
+  transition: all 0.3s ease;
+}
+
+.glass-card-hover:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-2px);
+  box-shadow: var(--glass-shadow), var(--neon-glow-shadow);
+}
+
+/* Neon Effects */
+.neon-border {
+  border: 1px solid var(--neon-border);
+  box-shadow: var(--neon-glow-shadow);
+}
+
+.neon-text {
+  color: var(--neon-green);
+  text-shadow: 0 0 10px var(--neon-glow);
+}
+
+/* Loading and Animation Utilities */
+.animate-pulse-neon {
+  animation: pulse-neon 2s ease-in-out infinite alternate;
+}
+
+@keyframes pulse-neon {
+  from {
+    box-shadow: 0 0 5px var(--neon-glow);
+  }
+  to {
+    box-shadow: 0 0 20px var(--neon-glow), 0 0 30px var(--neon-glow);
+  }
+}
+
+/* Credit Score Gradient */
+.credit-score-gradient {
+  background: linear-gradient(135deg, var(--neon-green) 0%, var(--electric-green) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Focus States for Accessibility */
+.focus-neon:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--neon-border);
+}
