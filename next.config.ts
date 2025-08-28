@@ -17,6 +17,11 @@ const nextConfig: NextConfig = {
       },
     },
   },
+  output: 'standalone',
+  trailingSlash: false,
+  async generateBuildId() {
+    return 'glasswallet-build'
+  },
 };
 
 export default nextConfig;
