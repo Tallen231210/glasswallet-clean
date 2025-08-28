@@ -6,17 +6,11 @@ export const dynamic = 'force-dynamic';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { GlassCard, NeonButton, Badge, Input, FormField, InteractiveCard, AnimatedCounter } from '@/components/ui';
-import { SignedIn as MockSignedIn, SignedOut as MockSignedOut, UserButton as MockUserButton } from '@/components/auth/MockAuthProvider';
+import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 import Link from 'next/link';
 
 export default function Home() {
   const router = useRouter();
-  
-  // Temporarily use Mock components everywhere to fix deployments
-  // TODO: Add proper Clerk integration back after deployment pipeline works
-  const SignedIn = MockSignedIn;
-  const SignedOut = MockSignedOut;
-  const UserButton = MockUserButton;
   
   const [leadFormData, setLeadFormData] = useState({
     name: '',

@@ -1,16 +1,29 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 
-// Development middleware - bypass all authentication
-export default function middleware(request: NextRequest) {
-  // In development mode, just pass through without any authentication
-  if (process.env.NODE_ENV === 'development') {
-    return NextResponse.next();
+// Define protected routes
+const isProtectedRoute = createRouteMatcher([
+  '/dashboard(.*)',
+  '/leads(.*)',
+  '/analytics(.*)',
+  '/settings(.*)',
+  '/admin(.*)',
+  '/pixels(.*)',
+  '/integrations(.*)',
+  '/billing(.*)',
+  '/crm(.*)',
+  '/ai-intelligence(.*)',
+  '/performance(.*)',
+  '/activity(.*)',
+  '/quick-actions(.*)',
+  '/api/((?!test|simple).*)', // Protect all API routes except test and simple
+]);
+
+export default clerkMiddleware((auth, req) => {
+  // Protect routes that require authentication
+  if (isProtectedRoute(req)) {
+    auth().protect();
   }
-  
-  // In production, import and use Clerk middleware
-  // This will only be executed in production builds
-  throw new Error('Production middleware not implemented yet - Clerk setup required');
-}
+});
 
 export const config = {
   matcher: [

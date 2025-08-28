@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { MockAuthProvider } from '@/components/auth/MockAuthProvider';
+import { ClerkProvider } from '@clerk/nextjs';
 import { UserProvider } from '@/contexts/UserContext';
 import "./globals.css";
 
@@ -26,10 +26,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Temporarily use MockAuthProvider everywhere to fix deployments
-  // TODO: Add proper Clerk integration back after deployment pipeline works
   return (
-    <MockAuthProvider>
+    <ClerkProvider>
       <html lang="en" className="h-full">
         <body className={`${inter.variable} font-sans h-full antialiased`}>
           <UserProvider>
@@ -39,6 +37,6 @@ export default function RootLayout({
           </UserProvider>
         </body>
       </html>
-    </MockAuthProvider>
+    </ClerkProvider>
   );
 }
