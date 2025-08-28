@@ -33,10 +33,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const isDevelopment = process.env.NODE_ENV === 'development';
-  const isBuilding = process.env.NODE_ENV === 'production' && !process.env.VERCEL;
+  const hasValidClerkKeys = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && 
+    !process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY.includes('placeholder');
   
-  // Use MockAuthProvider during development AND during build process
-  if (isDevelopment || isBuilding) {
+  // Use MockAuthProvider during development OR when Clerk keys are not configured
+  if (isDevelopment || !hasValidClerkKeys) {
     return (
       <MockAuthProvider>
         <html lang="en" className="h-full">

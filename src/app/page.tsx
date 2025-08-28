@@ -24,12 +24,13 @@ if (process.env.NODE_ENV === 'production') {
 export default function Home() {
   const router = useRouter();
   const isDevelopment = process.env.NODE_ENV === 'development';
-  const isBuilding = process.env.NODE_ENV === 'production' && !process.env.VERCEL;
+  const hasValidClerkKeys = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && 
+    !process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY.includes('placeholder');
   
-  // Use Mock components during development AND during build process
-  const SignedIn = (isDevelopment || isBuilding) ? MockSignedIn : ClerkSignedIn;
-  const SignedOut = (isDevelopment || isBuilding) ? MockSignedOut : ClerkSignedOut;
-  const UserButton = (isDevelopment || isBuilding) ? MockUserButton : ClerkUserButton;
+  // Use Mock components during development OR when Clerk keys are not configured
+  const SignedIn = (isDevelopment || !hasValidClerkKeys) ? MockSignedIn : ClerkSignedIn;
+  const SignedOut = (isDevelopment || !hasValidClerkKeys) ? MockSignedOut : ClerkSignedOut;
+  const UserButton = (isDevelopment || !hasValidClerkKeys) ? MockUserButton : ClerkUserButton;
   
   const [leadFormData, setLeadFormData] = useState({
     name: '',
