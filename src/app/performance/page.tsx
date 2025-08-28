@@ -2,7 +2,9 @@
 
 
 // Disable static generation for this page
-export const dynamic = 'force-dynamic';import React, { useState } from 'react';
+export const dynamic = 'force-dynamic';
+
+import React, { useState } from 'react';
 import { AppShell } from '@/components/layout/AppShell';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { StatCard } from '@/components/ui/StatCard';

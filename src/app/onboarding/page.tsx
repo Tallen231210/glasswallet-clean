@@ -2,7 +2,9 @@
 
 
 // Disable static generation for this page
-export const dynamic = 'force-dynamic';import React from 'react';
+export const dynamic = 'force-dynamic';
+
+import React from 'react';
 import { useRouter } from 'next/navigation';
 import { AccountType } from '@/types/user';
 import { useUser } from '@/contexts/UserContext';

@@ -2,7 +2,9 @@
 
 
 // Disable static generation for this page
-export const dynamic = 'force-dynamic';import React, { useState, useEffect } from 'react';
+export const dynamic = 'force-dynamic';
+
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import { 

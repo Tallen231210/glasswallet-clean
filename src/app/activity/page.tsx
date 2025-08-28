@@ -1,9 +1,9 @@
 'use client';
 
-import React from 'react';
-
 // Disable static generation for this page
 export const dynamic = 'force-dynamic';
+
+import React from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   ActivityFeed,
