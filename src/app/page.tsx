@@ -9,28 +9,14 @@ import { GlassCard, NeonButton, Badge, Input, FormField, InteractiveCard, Animat
 import { SignedIn as MockSignedIn, SignedOut as MockSignedOut, UserButton as MockUserButton } from '@/components/auth/MockAuthProvider';
 import Link from 'next/link';
 
-// Only import Clerk components in production
-let ClerkSignedIn: any = null;
-let ClerkSignedOut: any = null;
-let ClerkUserButton: any = null;
-
-if (process.env.NODE_ENV === 'production') {
-  const clerk = require('@clerk/nextjs');
-  ClerkSignedIn = clerk.SignedIn;
-  ClerkSignedOut = clerk.SignedOut;
-  ClerkUserButton = clerk.UserButton;
-}
-
 export default function Home() {
   const router = useRouter();
-  const isDevelopment = process.env.NODE_ENV === 'development';
-  const hasValidClerkKeys = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && 
-    !process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY.includes('placeholder');
   
-  // Use Mock components during development OR when Clerk keys are not configured
-  const SignedIn = (isDevelopment || !hasValidClerkKeys) ? MockSignedIn : ClerkSignedIn;
-  const SignedOut = (isDevelopment || !hasValidClerkKeys) ? MockSignedOut : ClerkSignedOut;
-  const UserButton = (isDevelopment || !hasValidClerkKeys) ? MockUserButton : ClerkUserButton;
+  // Temporarily use Mock components everywhere to fix deployments
+  // TODO: Add proper Clerk integration back after deployment pipeline works
+  const SignedIn = MockSignedIn;
+  const SignedOut = MockSignedOut;
+  const UserButton = MockUserButton;
   
   const [leadFormData, setLeadFormData] = useState({
     name: '',
