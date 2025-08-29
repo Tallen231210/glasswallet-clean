@@ -502,53 +502,58 @@ body::before {
     0 0 30px rgba(0, 255, 136, 0.1);
 }
 
-/* Rainbow Gradient Border Animation */
-@keyframes rainbow-border {
+/* Rainbow Gradient Border Animation - Fixed Implementation */
+@keyframes rainbow-spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
 
 .rainbow-border-hover {
   position: relative;
-  overflow: hidden;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 0.5rem;
 }
 
 .rainbow-border-hover::before {
   content: '';
   position: absolute;
-  inset: -2px;
-  padding: 2px;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
   background: conic-gradient(
     from 0deg,
-    #ff6b6b,
-    #4ecdc4,
-    #45b7d1,
-    #96ceb4,
-    #ffeaa7,
-    #fab1a0,
-    #fd79a8,
-    #fdcb6e,
-    #6c5ce7,
-    #a29bfe,
-    #ff6b6b
+    #ff6b6b 0deg,
+    #4ecdc4 45deg,
+    #45b7d1 90deg,
+    #96ceb4 135deg,
+    #ffeaa7 180deg,
+    #fab1a0 225deg,
+    #fd79a8 270deg,
+    #6c5ce7 315deg,
+    #ff6b6b 360deg
   );
-  border-radius: inherit;
+  border-radius: 0.5rem;
   opacity: 0;
-  transform: rotate(0deg);
   transition: opacity 0.3s ease;
-  animation-duration: 3s;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
   z-index: -1;
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask-composite: subtract;
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: source-out;
 }
 
 .rainbow-border-hover:hover::before {
   opacity: 1;
-  animation-name: rainbow-border;
+  animation: rainbow-spin 3s linear infinite;
+}
+
+.rainbow-border-hover::after {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  right: 1px;
+  bottom: 1px;
+  background: rgba(0, 0, 0, 0.9);
+  border-radius: calc(0.5rem - 1px);
+  z-index: -1;
 }
 
 /* Futuristic Sidebar */
