@@ -11,14 +11,19 @@ import { NeonButton } from '@/components/ui/NeonButton';
 import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
 import { StatCard } from '@/components/ui/StatCard';
+import { TagIndicators } from '@/components/ui/TagIndicators';
 import { mockLeads, getLeadStats, type Lead } from '@/lib/mockData';
 
 export default function LeadsPage() {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
-  const [leads] = useState<Lead[]>(mockLeads);
+  const [leads, setLeads] = useState<Lead[]>(mockLeads);
   const [statusFilter, setStatusFilter] = useState<Lead['status'] | 'all'>('all');
+  const [tagFilter, setTagFilter] = useState<string>('all');
+  const [syncFilter, setSyncFilter] = useState<'all' | 'synced' | 'unsynced'>('all');
   const stats = getLeadStats();
+  const [isTagModalOpen, setIsTagModalOpen] = useState(false);
+  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
 
   let filteredLeads = leads.filter(lead => {
     const matchesSearch = 
@@ -28,7 +33,15 @@ export default function LeadsPage() {
     
     const matchesStatus = statusFilter === 'all' || lead.status === statusFilter;
     
-    return matchesSearch && matchesStatus;
+    const matchesTag = tagFilter === 'all' || lead.tags.some(tag => 
+      tag.toLowerCase().includes(tagFilter.toLowerCase())
+    );
+    
+    const matchesSync = syncFilter === 'all' || 
+      (syncFilter === 'synced' && lead.pixelSyncStatus?.synced) ||
+      (syncFilter === 'unsynced' && !lead.pixelSyncStatus?.synced);
+    
+    return matchesSearch && matchesStatus && matchesTag && matchesSync;
   });
 
   const getStatusColor = (status: string) => {
@@ -49,6 +62,59 @@ export default function LeadsPage() {
       case 'new': return '📋';
       default: return '📋';
     }
+  };
+
+  const handleTagAction = async (leadId: string, action: 'tag' | 'sync') => {
+    const lead = leads.find(l => l.id === leadId);
+    if (!lead) return;
+
+    if (action === 'tag') {
+      setSelectedLead(lead);
+      setIsTagModalOpen(true);
+    } else if (action === 'sync') {
+      // Simulate pixel sync
+      const updatedLeads = leads.map(l => {
+        if (l.id === leadId) {
+          return {
+            ...l,
+            pixelSyncStatus: {
+              synced: true,
+              lastSyncAt: new Date().toISOString(),
+              syncedPlatforms: ['META', 'GOOGLE_ADS'] as ('META' | 'GOOGLE_ADS' | 'TIKTOK')[],
+              failedPlatforms: []
+            }
+          };
+        }
+        return l;
+      });
+      setLeads(updatedLeads);
+      
+      // Show success message (in real app, this would be a toast)
+      alert(`Lead ${lead.firstName} ${lead.lastName} successfully synced to pixels!`);
+    }
+  };
+
+  const quickTagLead = (leadId: string, newTags: string[]) => {
+    const updatedLeads = leads.map(lead => {
+      if (lead.id === leadId) {
+        const existingTags = lead.tags.filter(tag => !newTags.includes(tag));
+        return {
+          ...lead,
+          tags: [...existingTags, ...newTags]
+        };
+      }
+      return lead;
+    });
+    setLeads(updatedLeads);
+    setIsTagModalOpen(false);
+    setSelectedLead(null);
+  };
+
+  // Get unique tags for filter
+  const allTags = Array.from(new Set(leads.flatMap(lead => lead.tags)));
+  const syncStats = {
+    synced: leads.filter(l => l.pixelSyncStatus?.synced).length,
+    unsynced: leads.filter(l => !l.pixelSyncStatus?.synced).length
   };
 
   return (
@@ -73,7 +139,7 @@ export default function LeadsPage() {
         </div>
         
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6 mb-8">
           <StatCard
             title="Total Leads"
             value={stats.total}
@@ -91,6 +157,14 @@ export default function LeadsPage() {
             trend="+8% this month"
           />
           <StatCard
+            title="Pixel Synced"
+            value={syncStats.synced}
+            description={`${Math.round((syncStats.synced / stats.total) * 100)}% of leads`}
+            icon="🔄"
+            variant="neon"
+            trend={`${syncStats.unsynced} pending`}
+          />
+          <StatCard
             title="Processing"
             value={stats.processing}
             description="In review"
@@ -102,7 +176,7 @@ export default function LeadsPage() {
             value={stats.new}
             description="Needs attention"
             icon="📋"
-            variant="neon"
+            variant="default"
           />
           <StatCard
             title="Avg Credit Score"
@@ -126,29 +200,89 @@ export default function LeadsPage() {
               />
             </div>
             
-            <div className="flex gap-2 flex-wrap">
-              {['all', 'new', 'qualified', 'processing', 'completed', 'rejected'].map((status) => (
+            <div className="space-y-3">
+              {/* Status Filter */}
+              <div className="flex gap-2 flex-wrap">
+                <span className="text-sm text-gray-400 font-medium self-center mr-2">Status:</span>
+                {['all', 'new', 'qualified', 'processing', 'completed', 'rejected'].map((status) => (
+                  <button
+                    key={status}
+                    onClick={() => setStatusFilter(status as any)}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      statusFilter === status
+                        ? 'bg-neon-green text-black'
+                        : 'bg-white/10 text-gray-300 hover:bg-white/20'
+                    }`}
+                  >
+                    {status.charAt(0).toUpperCase() + status.slice(1)}
+                    {status !== 'all' && (
+                      <span className="ml-1 text-xs opacity-75">
+                        ({status === 'new' ? stats.new : 
+                          status === 'qualified' ? stats.qualified :
+                          status === 'processing' ? stats.processing :
+                          status === 'completed' ? stats.completed :
+                          status === 'rejected' ? stats.rejected : stats.total})
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </div>
+
+              {/* Tag Filter */}
+              <div className="flex gap-2 flex-wrap">
+                <span className="text-sm text-gray-400 font-medium self-center mr-2">Tags:</span>
                 <button
-                  key={status}
-                  onClick={() => setStatusFilter(status as any)}
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    statusFilter === status
+                  onClick={() => setTagFilter('all')}
+                  className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+                    tagFilter === 'all'
                       ? 'bg-neon-green text-black'
                       : 'bg-white/10 text-gray-300 hover:bg-white/20'
                   }`}
                 >
-                  {status.charAt(0).toUpperCase() + status.slice(1)}
-                  {status !== 'all' && (
-                    <span className="ml-1 text-xs opacity-75">
-                      ({status === 'new' ? stats.new : 
-                        status === 'qualified' ? stats.qualified :
-                        status === 'processing' ? stats.processing :
-                        status === 'completed' ? stats.completed :
-                        status === 'rejected' ? stats.rejected : stats.total})
-                    </span>
-                  )}
+                  All Tags
                 </button>
-              ))}
+                {['qualified', 'whitelist', 'high-value', 'premium'].map((tag) => (
+                  <button
+                    key={tag}
+                    onClick={() => setTagFilter(tag)}
+                    className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+                      tagFilter === tag
+                        ? 'bg-neon-green text-black'
+                        : 'bg-white/10 text-gray-300 hover:bg-white/20'
+                    }`}
+                  >
+                    {tag}
+                    <span className="ml-1 text-xs opacity-75">
+                      ({leads.filter(l => l.tags.includes(tag)).length})
+                    </span>
+                  </button>
+                ))}
+              </div>
+
+              {/* Sync Filter */}
+              <div className="flex gap-2 flex-wrap">
+                <span className="text-sm text-gray-400 font-medium self-center mr-2">Pixel Sync:</span>
+                {[
+                  { key: 'all', label: 'All Leads', count: leads.length },
+                  { key: 'synced', label: 'Synced', count: syncStats.synced },
+                  { key: 'unsynced', label: 'Not Synced', count: syncStats.unsynced }
+                ].map((option) => (
+                  <button
+                    key={option.key}
+                    onClick={() => setSyncFilter(option.key as any)}
+                    className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+                      syncFilter === option.key
+                        ? 'bg-neon-green text-black'
+                        : 'bg-white/10 text-gray-300 hover:bg-white/20'
+                    }`}
+                  >
+                    {option.label}
+                    <span className="ml-1 text-xs opacity-75">
+                      ({option.count})
+                    </span>
+                  </button>
+                ))}
+              </div>
             </div>
             
             <NeonButton variant="secondary" size="sm">
@@ -173,43 +307,55 @@ export default function LeadsPage() {
                 className="card-interactive p-6 rounded-xl bg-white/5 border border-white/10 cursor-pointer"
                 onClick={() => router.push(`/leads/${lead.id}`)}
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-neon-green/20 rounded-full flex items-center justify-center">
-                      <span className="text-neon-green font-bold">
-                        {lead.firstName[0]}{lead.lastName[0]}
-                      </span>
+                <div className="space-y-4">
+                  {/* Lead Header */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-neon-green/20 rounded-full flex items-center justify-center">
+                        <span className="text-neon-green font-bold">
+                          {lead.firstName[0]}{lead.lastName[0]}
+                        </span>
+                      </div>
+                      
+                      <div>
+                        <h3 className="font-semibold text-white">
+                          {lead.firstName} {lead.lastName}
+                        </h3>
+                        <p className="text-gray-400 text-sm">{lead.email}</p>
+                        {lead.phone && (
+                          <p className="text-gray-500 text-sm">{lead.phone}</p>
+                        )}
+                      </div>
                     </div>
-                    
-                    <div>
-                      <h3 className="font-semibold text-white">
-                        {lead.firstName} {lead.lastName}
-                      </h3>
-                      <p className="text-gray-400 text-sm">{lead.email}</p>
-                      {lead.phone && (
-                        <p className="text-gray-500 text-sm">{lead.phone}</p>
+
+                    <div className="flex items-center gap-4 flex-shrink-0">
+                      {lead.creditScore && (
+                        <div className="text-center">
+                          <p className="text-sm text-gray-400">Credit Score</p>
+                          <p className="font-bold text-white">{lead.creditScore}</p>
+                        </div>
                       )}
+                      
+                      <Badge variant={getStatusColor(lead.status) as any}>
+                        {getStatusIcon(lead.status)} {lead.status}
+                      </Badge>
+                      
+                      <div className="text-center">
+                        <p className="text-sm text-gray-400">Added</p>
+                        <p className="text-xs text-gray-500">
+                          {new Date(lead.createdAt).toLocaleDateString()}
+                        </p>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-4">
-                    {lead.creditScore && (
-                      <div className="text-center">
-                        <p className="text-sm text-gray-400">Credit Score</p>
-                        <p className="font-bold text-white">{lead.creditScore}</p>
-                      </div>
-                    )}
-                    
-                    <Badge variant={getStatusColor(lead.status) as any}>
-                      {getStatusIcon(lead.status)} {lead.status}
-                    </Badge>
-                    
-                    <div className="text-center">
-                      <p className="text-sm text-gray-400">Added</p>
-                      <p className="text-xs text-gray-500">
-                        {new Date(lead.createdAt).toLocaleDateString()}
-                      </p>
-                    </div>
+                  {/* Tags and Pixel Sync Status */}
+                  <div className="border-t border-white/10 pt-4">
+                    <TagIndicators 
+                      lead={lead} 
+                      onTagAction={handleTagAction}
+                      compact={true}
+                    />
                   </div>
                 </div>
               </div>
@@ -231,6 +377,72 @@ export default function LeadsPage() {
             </div>
           )}
         </GlassCard>
+
+        {/* Quick Tag Modal */}
+        {isTagModalOpen && selectedLead && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-gray-900 border border-white/20 rounded-xl p-6 max-w-md w-full mx-4">
+              <h3 className="text-lg font-semibold text-white mb-4">
+                Add Tags to {selectedLead.firstName} {selectedLead.lastName}
+              </h3>
+              
+              <div className="space-y-3 mb-6">
+                <p className="text-sm text-gray-400">Current tags:</p>
+                <div className="flex flex-wrap gap-2">
+                  {selectedLead.tags.map((tag, index) => (
+                    <Badge key={`current-${tag}-${index}`} variant="secondary" size="sm">
+                      {tag}
+                    </Badge>
+                  ))}
+                  {selectedLead.tags.length === 0 && (
+                    <span className="text-sm text-gray-500">No tags yet</span>
+                  )}
+                </div>
+              </div>
+              
+              <div className="space-y-3 mb-6">
+                <p className="text-sm text-gray-400">Add quick tags:</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {['qualified', 'whitelist', 'high-value', 'premium', 'vip', 'blacklist'].map((tag) => (
+                    <NeonButton
+                      key={tag}
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => {
+                        if (!selectedLead.tags.includes(tag)) {
+                          quickTagLead(selectedLead.id, [tag]);
+                        }
+                      }}
+                      disabled={selectedLead.tags.includes(tag)}
+                      className="text-xs"
+                    >
+                      {selectedLead.tags.includes(tag) ? '✓ ' : ''}{tag}
+                    </NeonButton>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="flex gap-3">
+                <NeonButton
+                  variant="secondary"
+                  onClick={() => {
+                    setIsTagModalOpen(false);
+                    setSelectedLead(null);
+                  }}
+                  className="flex-1"
+                >
+                  Cancel
+                </NeonButton>
+                <NeonButton
+                  onClick={() => router.push(`/leads/${selectedLead.id}`)}
+                  className="flex-1"
+                >
+                  View Details
+                </NeonButton>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </AppLayout>
   );

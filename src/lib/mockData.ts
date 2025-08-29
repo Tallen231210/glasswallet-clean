@@ -14,6 +14,12 @@ export interface Lead {
   tags: string[];
   notes?: string;
   qualificationNotes?: string;
+  pixelSyncStatus?: {
+    synced: boolean;
+    lastSyncAt?: string;
+    syncedPlatforms?: ('META' | 'GOOGLE_ADS' | 'TIKTOK')[];
+    failedPlatforms?: ('META' | 'GOOGLE_ADS' | 'TIKTOK')[];
+  };
 }
 
 export interface User {
@@ -64,9 +70,15 @@ export const mockLeads: Lead[] = [
     createdAt: '2024-08-28T10:30:00Z',
     updatedAt: '2024-08-28T11:15:00Z',
     source: 'website',
-    tags: ['high-value', 'premium'],
+    tags: ['high-value', 'premium', 'whitelist'],
     notes: 'Interested in premium package, excellent credit history',
-    qualificationNotes: 'Pre-approved for highest tier'
+    qualificationNotes: 'Pre-approved for highest tier',
+    pixelSyncStatus: {
+      synced: true,
+      lastSyncAt: '2024-08-28T11:20:00Z',
+      syncedPlatforms: ['META', 'GOOGLE_ADS'],
+      failedPlatforms: []
+    }
   },
   {
     id: 'lead-002',
@@ -79,8 +91,14 @@ export const mockLeads: Lead[] = [
     createdAt: '2024-08-28T09:15:00Z',
     updatedAt: '2024-08-28T10:45:00Z',
     source: 'referral',
-    tags: ['business-owner', 'tech'],
-    notes: 'CEO of tech startup, looking for business credit solutions'
+    tags: ['business-owner', 'tech', 'qualified'],
+    notes: 'CEO of tech startup, looking for business credit solutions',
+    pixelSyncStatus: {
+      synced: false,
+      lastSyncAt: undefined,
+      syncedPlatforms: [],
+      failedPlatforms: []
+    }
   },
   {
     id: 'lead-003',
@@ -93,7 +111,13 @@ export const mockLeads: Lead[] = [
     updatedAt: '2024-08-28T08:45:00Z',
     source: 'facebook',
     tags: ['first-time-buyer'],
-    notes: 'New to credit, needs guidance'
+    notes: 'New to credit, needs guidance',
+    pixelSyncStatus: {
+      synced: false,
+      lastSyncAt: undefined,
+      syncedPlatforms: [],
+      failedPlatforms: []
+    }
   },
   {
     id: 'lead-004',
@@ -106,8 +130,14 @@ export const mockLeads: Lead[] = [
     createdAt: '2024-08-27T16:20:00Z',
     updatedAt: '2024-08-28T09:30:00Z',
     source: 'google',
-    tags: ['construction', 'good-credit'],
-    qualificationNotes: 'Approved for standard tier'
+    tags: ['construction', 'good-credit', 'qualified'],
+    qualificationNotes: 'Approved for standard tier',
+    pixelSyncStatus: {
+      synced: true,
+      lastSyncAt: '2024-08-28T10:15:00Z',
+      syncedPlatforms: ['META', 'TIKTOK'],
+      failedPlatforms: ['GOOGLE_ADS']
+    }
   },
   {
     id: 'lead-005',
@@ -120,8 +150,14 @@ export const mockLeads: Lead[] = [
     createdAt: '2024-08-27T14:10:00Z',
     updatedAt: '2024-08-28T08:20:00Z',
     source: 'referral',
-    tags: ['healthcare', 'excellent-credit', 'vip'],
-    notes: 'Healthcare professional, excellent payment history'
+    tags: ['healthcare', 'excellent-credit', 'vip', 'whitelist'],
+    notes: 'Healthcare professional, excellent payment history',
+    pixelSyncStatus: {
+      synced: true,
+      lastSyncAt: '2024-08-28T08:30:00Z',
+      syncedPlatforms: ['META', 'GOOGLE_ADS', 'TIKTOK'],
+      failedPlatforms: []
+    }
   },
   // Adding 45 more realistic leads...
   ...Array.from({ length: 45 }, (_, i) => ({
@@ -135,7 +171,21 @@ export const mockLeads: Lead[] = [
     createdAt: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(), // Last 7 days
     updatedAt: new Date(Date.now() - Math.random() * 24 * 60 * 60 * 1000).toISOString(), // Last 24 hours
     source: ['website', 'referral', 'facebook', 'google', 'direct'][i % 5] as Lead['source'],
-    tags: [['new-customer'], ['high-value'], ['business-owner'], ['returning'], ['premium']][i % 5],
+    tags: [
+      ['new-customer'], 
+      ['high-value', 'qualified'], 
+      ['business-owner', 'whitelist'], 
+      ['returning'], 
+      ['premium', 'qualified']
+    ][i % 5],
+    pixelSyncStatus: {
+      synced: Math.random() > 0.3,
+      lastSyncAt: Math.random() > 0.3 ? new Date(Date.now() - Math.random() * 48 * 60 * 60 * 1000).toISOString() : undefined,
+      syncedPlatforms: Math.random() > 0.3 ? 
+        [['META'], ['GOOGLE_ADS'], ['TIKTOK'], ['META', 'GOOGLE_ADS'], ['META', 'TIKTOK'], ['GOOGLE_ADS', 'TIKTOK'], ['META', 'GOOGLE_ADS', 'TIKTOK']][Math.floor(Math.random() * 7)] as any : [],
+      failedPlatforms: Math.random() > 0.7 ? 
+        [['META'], ['GOOGLE_ADS'], ['TIKTOK']][Math.floor(Math.random() * 3)] as any : []
+    },
     notes: i % 3 === 0 ? `Note for lead ${i + 6}` : undefined
   }))
 ];
