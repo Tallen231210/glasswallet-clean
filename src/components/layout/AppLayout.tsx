@@ -64,18 +64,12 @@ export function AppLayout({ children }: AppLayoutProps) {
     <>
       {/* Logo Section */}
       <div className="p-6 border-b border-gray-700/50">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 flex items-center justify-center relative overflow-hidden">
-            <img 
-              src="/images/glasswallet-logo.png" 
-              alt="GlassWallet Logo" 
-              className="w-10 h-10 object-contain"
-            />
-          </div>
-          <div>
-            <h1 className="text-white font-black text-xl tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>GlassWallet</h1>
-            <p className="text-micro text-neon-green">Credit Platform</p>
-          </div>
+        <div className="flex items-center justify-center">
+          <img 
+            src="/images/glasswallet-logo.png" 
+            alt="GlassWallet Logo" 
+            className="h-12 object-contain"
+          />
         </div>
       </div>
 
