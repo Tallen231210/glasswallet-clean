@@ -3,7 +3,7 @@
 // Disable static generation for this page
 export const dynamic = 'force-dynamic';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { NeonButton } from '@/components/ui/NeonButton';
@@ -27,7 +27,7 @@ interface PixelConnection {
   };
 }
 
-export default function PixelsPage() {
+function PixelsPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [connections, setConnections] = useState<PixelConnection[]>([]);
@@ -435,5 +435,13 @@ export default function PixelsPage() {
 
       </div>
     </AppLayout>
+  );
+}
+
+export default function PixelsPage() {
+  return (
+    <Suspense fallback={<div className="p-6 text-white">Loading...</div>}>
+      <PixelsPageContent />
+    </Suspense>
   );
 }

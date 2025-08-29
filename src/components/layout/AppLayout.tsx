@@ -26,6 +26,8 @@ export function AppLayout({ children }: AppLayoutProps) {
     { path: '/leads/analytics', label: 'Analytics', icon: 'chart', type: 'sub', parent: 'leads' },
     { path: '/leads/rules', label: 'Auto-Tagging Rules', icon: 'robot', type: 'sub', parent: 'leads' },
     { path: '/pixels', label: 'Pixel Integration', icon: 'pixel', type: 'main' },
+    { path: '/widgets', label: 'JavaScript Widgets', icon: 'widget', type: 'main' },
+    { path: '/webhooks', label: 'Webhook Management', icon: 'webhook', type: 'main' },
   ];
 
   const renderIcon = (iconName: string, isActive: boolean) => {
@@ -67,6 +69,18 @@ export function AppLayout({ children }: AppLayoutProps) {
         return (
           <svg className={iconClass} fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+          </svg>
+        );
+      case 'widget':
+        return (
+          <svg className={iconClass} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM7 3H5a2 2 0 00-2 2v12a4 4 0 004 4h2V3zM17 21a4 4 0 004-4V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4zM17 3h2a2 2 0 012 2v12a4 4 0 01-4 4h-2V3z" />
+          </svg>
+        );
+      case 'webhook':
+        return (
+          <svg className={iconClass} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
           </svg>
         );
       default:
