@@ -1,25 +1,26 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, memo, useMemo, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useUser, SignOutButton } from '@clerk/nextjs';
+import { PerformanceMonitor } from '@/components/performance/PerformanceMonitor';
 
 interface AppLayoutProps {
   children: React.ReactNode;
 }
 
-export function AppLayout({ children }: AppLayoutProps) {
+const AppLayoutComponent = ({ children }: AppLayoutProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const { user, isLoaded } = useUser();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const isActive = (path: string) => {
+  const isActive = useCallback((path: string) => {
     if (path === '/dashboard') return pathname === '/dashboard';
     return pathname.startsWith(path);
-  };
+  }, [pathname]);
 
-  const navigationItems = [
+  const navigationItems = useMemo(() => [
     { path: '/dashboard', label: 'Dashboard', icon: 'dashboard', type: 'main' },
     { path: '/leads', label: 'Leads', icon: 'users', type: 'main' },
     { path: '/leads/new', label: 'Add Lead', icon: 'plus', type: 'sub', parent: 'leads' },
@@ -28,7 +29,7 @@ export function AppLayout({ children }: AppLayoutProps) {
     { path: '/pixels', label: 'Pixel Integration', icon: 'pixel', type: 'main' },
     { path: '/widgets', label: 'JavaScript Widgets', icon: 'widget', type: 'main' },
     { path: '/webhooks', label: 'Webhook Management', icon: 'webhook', type: 'main' },
-  ];
+  ], []);
 
   const renderIcon = (iconName: string, isActive: boolean) => {
     const iconClass = `w-5 h-5 transition-smooth text-neon-green`;
@@ -209,6 +210,13 @@ export function AppLayout({ children }: AppLayoutProps) {
       <div className="flex-1 bg-black md:ml-0">
         {children}
       </div>
+      
+      {/* Performance Monitor - Only in development */}
+      <PerformanceMonitor enabled={process.env.NODE_ENV === 'development'} />
     </div>
   );
-}
+};
+
+// Memoize the AppLayout component to prevent unnecessary re-renders
+export const AppLayout = memo(AppLayoutComponent);
+AppLayout.displayName = 'AppLayout';

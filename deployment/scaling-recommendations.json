@@ -1,0 +1,22 @@
+{
+  "infrastructure": [
+    "Implement auto-scaling based on CPU and memory usage",
+    "Set up multiple regions for global performance",
+    "Configure CDN for static assets"
+  ],
+  "application": [
+    "Implement Redis for session storage and caching",
+    "Use database connection pooling",
+    "Optimize bundle size with code splitting"
+  ],
+  "database": [
+    "Implement read replicas for heavy read workloads",
+    "Set up database connection pooling",
+    "Monitor slow queries and optimize indexes"
+  ],
+  "cdn": [
+    "Configure Cloudflare or similar CDN",
+    "Enable compression for text-based responses",
+    "Implement edge caching for API responses"
+  ]
+}

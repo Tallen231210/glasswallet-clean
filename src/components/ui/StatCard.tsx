@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import { GlassCard } from './GlassCard';
 import { AnimatedCounter } from './AnimatedCounter';
@@ -43,7 +43,7 @@ const variantStyles = {
   },
 };
 
-export const StatCard: React.FC<StatCardProps> = ({
+const StatCardComponent: React.FC<StatCardProps> = ({
   title,
   value,
   change,
@@ -55,7 +55,36 @@ export const StatCard: React.FC<StatCardProps> = ({
   className,
   ...props
 }) => {
-  const styles = variantStyles[variant];
+  const styles = useMemo(() => variantStyles[variant], [variant]);
+  
+  const trendDisplay = useMemo(() => {
+    if (loading) return null;
+    if (!change && !trend) return null;
+    
+    return (
+      <div className="flex items-center text-sm">
+        {change && (
+          <span
+            className={cn(
+              'flex items-center gap-1 font-medium',
+              (change.type === 'increase' || change.type === 'positive') ? 'text-green-400' : 'text-red-400'
+            )}
+          >
+            {(change.type === 'increase' || change.type === 'positive') ? '↗' : '↘'}
+            {Math.abs(change.value)}%
+          </span>
+        )}
+        {change && change.period && (
+          <span className="text-gray-500 ml-2">
+            vs {change.period}
+          </span>
+        )}
+        {trend && !change && (
+          <span className="text-gray-400">{trend}</span>
+        )}
+      </div>
+    );
+  }, [change, trend, loading]);
 
   return (
     <GlassCard className={cn('p-6', className)} {...props}>
@@ -73,29 +102,7 @@ export const StatCard: React.FC<StatCardProps> = ({
               style={variant === 'neon' ? {color: styles.valueColor, fontFamily: 'var(--font-display)'} : {fontFamily: 'var(--font-display)'}}
             />
           )}
-          {(change || trend) && !loading && (
-            <div className="flex items-center text-sm">
-              {change && (
-                <span
-                  className={cn(
-                    'flex items-center gap-1 font-medium',
-                    (change.type === 'increase' || change.type === 'positive') ? 'text-green-400' : 'text-red-400'
-                  )}
-                >
-                  {(change.type === 'increase' || change.type === 'positive') ? '↗' : '↘'}
-                  {Math.abs(change.value)}%
-                </span>
-              )}
-              {change && change.period && (
-                <span className="text-gray-500 ml-2">
-                  vs {change.period}
-                </span>
-              )}
-              {trend && !change && (
-                <span className="text-gray-400">{trend}</span>
-              )}
-            </div>
-          )}
+          {trendDisplay}
           {description && !loading && (
             <p className="text-sm text-gray-400 mt-2">
               {description}
@@ -115,5 +122,11 @@ export const StatCard: React.FC<StatCardProps> = ({
     </GlassCard>
   );
 };
+
+// Memoize the component to prevent unnecessary re-renders
+export const StatCard = memo(StatCardComponent);
+
+// Custom comparison function for memo
+StatCard.displayName = 'StatCard';
 
 export default StatCard;

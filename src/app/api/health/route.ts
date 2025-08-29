@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { withMiddleware } from '@/lib/middleware';
+import { withPerformance } from '@/middleware/performance';
 import { formatSuccessResponse } from '@/lib/errors';
 import { prisma } from '@/lib/prisma';
 
-const handler = withMiddleware(async (context) => {
+const baseHandler = withMiddleware(async (context) => {
   const { requestId } = context;
 
   try {
@@ -33,6 +34,13 @@ const handler = withMiddleware(async (context) => {
 
     return NextResponse.json(formatSuccessResponse(healthData), { status: 503 });
   }
+});
+
+// Wrap with performance middleware - cache for 1 minute, rate limit 60 requests per minute
+const handler = withPerformance(baseHandler, {
+  cache: true,
+  rateLimit: { limit: 60, windowMs: 60000 },
+  timeout: 5000
 });
 
 export const GET = handler;
