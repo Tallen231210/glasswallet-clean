@@ -65,9 +65,12 @@ export function AppLayout({ children }: AppLayoutProps) {
       {/* Logo Section */}
       <div className="p-6 border-b border-gray-700/50">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-gradient-to-r from-green-400 to-green-600 rounded-xl flex items-center justify-center relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse-neon"></div>
-            <span className="text-black font-bold text-xl relative z-10">G</span>
+          <div className="w-12 h-12 flex items-center justify-center relative overflow-hidden">
+            <img 
+              src="/images/glasswallet-logo.png" 
+              alt="GlassWallet Logo" 
+              className="w-10 h-10 object-contain"
+            />
           </div>
           <div>
             <h1 className="text-white font-black text-xl tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>GlassWallet</h1>
