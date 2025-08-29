@@ -338,4 +338,4 @@ export const CreditProcessingCenter: React.FC<CreditProcessingCenterProps> = ({
       )}
     </GlassCard>
   );
-};
+};export default CreditProcessingCenter;

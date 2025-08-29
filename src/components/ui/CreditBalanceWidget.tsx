@@ -171,4 +171,4 @@ export const CreditBalanceWidget: React.FC<CreditBalanceWidgetProps> = ({
       </div>
     </div>
   );
-};
+};export default CreditBalanceWidget;

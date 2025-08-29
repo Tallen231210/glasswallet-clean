@@ -454,3 +454,5 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
     </GlassCard>
   );
 };
+
+export default ActivityFeed;

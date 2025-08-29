@@ -7,13 +7,12 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  experimental: {
-    turbo: {
-      rules: {
-        '*.svg': {
-          loaders: ['@svgr/webpack'],
-          as: '*.js',
-        },
+  turbopack: {
+    root: process.cwd(),
+    rules: {
+      '*.svg': {
+        loaders: ['@svgr/webpack'],
+        as: '*.js',
       },
     },
   },
@@ -21,6 +20,15 @@ const nextConfig: NextConfig = {
   trailingSlash: false,
   async generateBuildId() {
     return 'glasswallet-build'
+  },
+  async redirects() {
+    return [
+      {
+        source: '/activity',
+        destination: '/dashboard',
+        permanent: false,
+      },
+    ]
   },
 };
 

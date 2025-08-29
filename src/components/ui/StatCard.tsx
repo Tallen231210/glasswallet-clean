@@ -1,6 +1,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { GlassCard } from './GlassCard';
+import { AnimatedCounter } from './AnimatedCounter';
 
 interface StatCardProps extends React.HTMLAttributes<HTMLDivElement> {
   title: string;
@@ -23,8 +24,10 @@ const variantStyles = {
     value: 'text-white',
   },
   neon: {
-    icon: 'bg-neon-green/20 text-neon-green',
-    value: 'text-neon-green',
+    icon: 'text-white',
+    iconBg: 'rgba(0, 255, 136, 0.2)',
+    value: 'text-white',
+    valueColor: 'var(--neon-green)'
   },
   success: {
     icon: 'bg-green-500/20 text-green-400',
@@ -64,9 +67,11 @@ export const StatCard: React.FC<StatCardProps> = ({
           {loading ? (
             <div className="h-8 w-24 bg-white/10 rounded animate-pulse" />
           ) : (
-            <p className={cn('text-2xl font-bold mb-1', styles.value)}>
-              {typeof value === 'number' ? value.toLocaleString() : value}
-            </p>
+            <AnimatedCounter 
+              value={value}
+              className={cn('text-3xl font-black mb-1', styles.value)}
+              style={variant === 'neon' ? {color: styles.valueColor, fontFamily: 'var(--font-display)'} : {fontFamily: 'var(--font-display)'}}
+            />
           )}
           {(change || trend) && !loading && (
             <div className="flex items-center text-sm">
@@ -101,7 +106,8 @@ export const StatCard: React.FC<StatCardProps> = ({
           <div className={cn(
             'w-12 h-12 rounded-lg flex items-center justify-center text-xl',
             styles.icon
-          )}>
+          )}
+          style={variant === 'neon' ? {backgroundColor: styles.iconBg} : {}}>
             {icon}
           </div>
         )}
@@ -109,3 +115,5 @@ export const StatCard: React.FC<StatCardProps> = ({
     </GlassCard>
   );
 };
+
+export default StatCard;

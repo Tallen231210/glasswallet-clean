@@ -1,0 +1,250 @@
+'use client';
+
+// Disable static generation for this page
+export const dynamic = 'force-dynamic';
+
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { GlassCard } from '@/components/ui/GlassCard';
+import { NeonButton } from '@/components/ui/NeonButton';
+import { Input } from '@/components/ui/Input';
+import { Badge } from '@/components/ui/Badge';
+import { FormField } from '@/components/ui/FormField';
+import { AppShell } from '@/components/layout/AppShell';
+
+export default function SettingsPage() {
+  const router = useRouter();
+  
+  const [settings, setSettings] = useState({
+    companyName: 'GlassWallet Corp',
+    email: 'admin@glasswallet.com',
+    phone: '(555) 123-4567',
+    timezone: 'America/New_York',
+    creditThreshold: '50',
+    leadAlerts: true,
+    systemAlerts: true,
+    twoFactorEnabled: false
+  });
+
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleInputChange = (field: string, value: string) => {
+    setSettings(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleToggleChange = (field: string, value: boolean) => {
+    setSettings(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    setIsSaving(false);
+    alert('Settings saved successfully!');
+  };
+
+  return (
+    <AppShell 
+      headerTitle="Settings"
+      headerSubtitle="Manage your account preferences and system configuration"
+      headerActions={
+        <div className="flex gap-3">
+          <NeonButton variant="secondary" onClick={() => router.push('/dashboard')}>
+            Dashboard
+          </NeonButton>
+          <NeonButton onClick={handleSave} disabled={isSaving}>
+            {isSaving ? 'Saving...' : 'Save Changes'}
+          </NeonButton>
+        </div>
+      }
+    >
+      <div className="p-6 space-y-8 max-w-4xl mx-auto">
+
+        {/* Account Information */}
+        <GlassCard className="p-6">
+          <h3 className="text-lg font-semibold text-white mb-6">🏢 Account Information</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <FormField label="Company Name" required>
+              <Input
+                value={settings.companyName}
+                onChange={(e) => handleInputChange('companyName', e.target.value)}
+                placeholder="Enter company name..."
+              />
+            </FormField>
+            
+            <FormField label="Contact Email" required>
+              <Input
+                type="email"
+                value={settings.email}
+                onChange={(e) => handleInputChange('email', e.target.value)}
+                placeholder="Enter contact email..."
+              />
+            </FormField>
+            
+            <FormField label="Phone Number">
+              <Input
+                type="tel"
+                value={settings.phone}
+                onChange={(e) => handleInputChange('phone', e.target.value)}
+                placeholder="(555) 123-4567"
+              />
+            </FormField>
+            
+            <FormField label="Timezone">
+              <select 
+                className="w-full p-3 bg-white/5 border border-white/10 rounded-lg text-white focus:border-neon-green focus:ring-1 focus:ring-neon-green"
+                value={settings.timezone}
+                onChange={(e) => handleInputChange('timezone', e.target.value)}
+              >
+                <option value="America/New_York">Eastern Time</option>
+                <option value="America/Chicago">Central Time</option>
+                <option value="America/Denver">Mountain Time</option>
+                <option value="America/Los_Angeles">Pacific Time</option>
+              </select>
+            </FormField>
+          </div>
+        </GlassCard>
+
+        {/* Notification Settings */}
+        <GlassCard className="p-6">
+          <h3 className="text-lg font-semibold text-white mb-6">🔔 Notification Settings</h3>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg">
+              <div>
+                <p className="text-white font-medium">Lead Alerts</p>
+                <p className="text-gray-400 text-sm">Get notified when new leads are qualified</p>
+              </div>
+              <label className="flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={settings.leadAlerts}
+                  onChange={(e) => handleToggleChange('leadAlerts', e.target.checked)}
+                  className="w-4 h-4 text-neon-green bg-transparent border-gray-300 rounded focus:ring-neon-green focus:ring-2"
+                />
+              </label>
+            </div>
+
+            <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg">
+              <div>
+                <p className="text-white font-medium">System Alerts</p>
+                <p className="text-gray-400 text-sm">Receive system status and maintenance notifications</p>
+              </div>
+              <label className="flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={settings.systemAlerts}
+                  onChange={(e) => handleToggleChange('systemAlerts', e.target.checked)}
+                  className="w-4 h-4 text-neon-green bg-transparent border-gray-300 rounded focus:ring-neon-green focus:ring-2"
+                />
+              </label>
+            </div>
+          </div>
+        </GlassCard>
+
+        {/* Credit Settings */}
+        <GlassCard className="p-6">
+          <h3 className="text-lg font-semibold text-white mb-6">💳 Credit Settings</h3>
+          <div className="space-y-6">
+            <FormField label="Credit Alert Threshold">
+              <Input
+                type="number"
+                value={settings.creditThreshold}
+                onChange={(e) => handleInputChange('creditThreshold', e.target.value)}
+                placeholder="Alert when credits are below..."
+              />
+              <p className="text-xs text-gray-400 mt-1">
+                You'll be notified when your credit balance falls below this amount
+              </p>
+            </FormField>
+
+            <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+              <div className="flex items-start gap-3">
+                <span className="text-blue-400 text-lg">ℹ️</span>
+                <div>
+                  <h4 className="text-blue-300 font-medium">API Documentation</h4>
+                  <p className="text-blue-200 text-sm mt-1">
+                    Access our comprehensive API documentation for credit data integration at{' '}
+                    <a href="#" className="text-neon-green underline">docs.glasswallet.com</a>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </GlassCard>
+
+        {/* Security Settings */}
+        <GlassCard className="p-6">
+          <h3 className="text-lg font-semibold text-white mb-6">🔐 Security Settings</h3>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg">
+              <div>
+                <p className="text-white font-medium">Two-Factor Authentication</p>
+                <p className="text-gray-400 text-sm">Add an extra layer of security to your account</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <Badge variant={settings.twoFactorEnabled ? 'success' : 'default'}>
+                  {settings.twoFactorEnabled ? 'Enabled' : 'Disabled'}
+                </Badge>
+                <label className="flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={settings.twoFactorEnabled}
+                    onChange={(e) => handleToggleChange('twoFactorEnabled', e.target.checked)}
+                    className="w-4 h-4 text-neon-green bg-transparent border-gray-300 rounded focus:ring-neon-green focus:ring-2"
+                  />
+                </label>
+              </div>
+            </div>
+
+            <div className="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+              <div className="flex items-start gap-3">
+                <span className="text-yellow-400 text-lg">🔒</span>
+                <div>
+                  <h4 className="text-yellow-300 font-medium">Password Management</h4>
+                  <p className="text-yellow-200 text-sm mt-1">
+                    We recommend using strong, unique passwords and enabling two-factor authentication for maximum security.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </GlassCard>
+
+        {/* Quick Actions */}
+        <GlassCard className="p-6">
+          <h3 className="text-lg font-semibold text-white mb-6">🚀 Quick Actions</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <NeonButton variant="secondary" className="flex items-center gap-2 justify-center p-4">
+              <span>👥</span>
+              User Management
+            </NeonButton>
+            <NeonButton variant="secondary" className="flex items-center gap-2 justify-center p-4">
+              <span>🔐</span>
+              Security Audit
+            </NeonButton>
+            <NeonButton variant="secondary" className="flex items-center gap-2 justify-center p-4">
+              <span>📊</span>
+              Export Data
+            </NeonButton>
+            <NeonButton variant="secondary" className="flex items-center gap-2 justify-center p-4">
+              <span>⚙️</span>
+              Advanced Settings
+            </NeonButton>
+          </div>
+        </GlassCard>
+
+        {/* Save Actions */}
+        <div className="flex justify-end gap-4 pt-6 border-t border-white/10">
+          <NeonButton variant="secondary" onClick={() => router.push('/dashboard')}>
+            Cancel
+          </NeonButton>
+          <NeonButton onClick={handleSave} disabled={isSaving}>
+            {isSaving ? 'Saving Changes...' : 'Save Settings'}
+          </NeonButton>
+        </div>
+
+      </div>
+    </AppShell>
+  );
+}

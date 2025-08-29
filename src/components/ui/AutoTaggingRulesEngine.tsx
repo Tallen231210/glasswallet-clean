@@ -631,3 +631,5 @@ export const AutoTaggingRulesEngine: React.FC<AutoTaggingRulesEngineProps> = ({
     </GlassCard>
   );
 };
+
+export default AutoTaggingRulesEngine;

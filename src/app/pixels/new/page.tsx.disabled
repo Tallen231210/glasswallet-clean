@@ -1,0 +1,112 @@
+'use client';
+
+// Disable static generation for this page
+export const dynamic = 'force-dynamic';
+
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { GlassCard } from '@/components/ui/GlassCard';
+import { NeonButton } from '@/components/ui/NeonButton';
+import { Input } from '@/components/ui/Input';
+import { FormField } from '@/components/ui/FormField';
+import { AppShell } from '@/components/layout/AppShell';
+
+export default function NewPixelPage() {
+  const router = useRouter();
+  
+  const [formData, setFormData] = useState({
+    platform: 'meta',
+    pixelId: '',
+    accessToken: '',
+    adAccountId: ''
+  });
+  
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    setIsSubmitting(false);
+    alert('Pixel connected successfully!');
+    router.push('/pixels');
+  };
+
+  return (
+    <AppShell 
+      headerTitle="Connect New Pixel"
+      headerSubtitle="Add advertising platform integration for lead synchronization"
+      headerActions={
+        <NeonButton variant="secondary" onClick={() => router.push('/pixels')}>
+          Back to Pixels
+        </NeonButton>
+      }
+    >
+      <div className="p-6 max-w-2xl mx-auto">
+        <GlassCard className="p-8">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            
+            <FormField label="Platform" required>
+              <select 
+                className="w-full p-3 bg-white/5 border border-white/10 rounded-lg text-white focus:border-neon-green focus:ring-1 focus:ring-neon-green"
+                value={formData.platform}
+                onChange={(e) => setFormData({...formData, platform: e.target.value})}
+              >
+                <option value="meta">Meta (Facebook)</option>
+                <option value="google">Google Ads</option>
+                <option value="tiktok">TikTok Ads</option>
+              </select>
+            </FormField>
+
+            <FormField label="Pixel ID" required>
+              <Input
+                value={formData.pixelId}
+                onChange={(e) => setFormData({...formData, pixelId: e.target.value})}
+                placeholder="Enter pixel ID..."
+                required
+              />
+            </FormField>
+
+            <FormField label="Access Token" required>
+              <Input
+                type="password"
+                value={formData.accessToken}
+                onChange={(e) => setFormData({...formData, accessToken: e.target.value})}
+                placeholder="Enter access token..."
+                required
+              />
+            </FormField>
+
+            <FormField label="Ad Account ID">
+              <Input
+                value={formData.adAccountId}
+                onChange={(e) => setFormData({...formData, adAccountId: e.target.value})}
+                placeholder="Enter ad account ID (optional)..."
+              />
+            </FormField>
+
+            <div className="flex gap-4 pt-6 border-t border-white/10">
+              <NeonButton 
+                type="submit" 
+                disabled={isSubmitting}
+                className="flex-1"
+              >
+                {isSubmitting ? 'Connecting...' : 'Connect Pixel'}
+              </NeonButton>
+              <NeonButton 
+                type="button"
+                variant="secondary"
+                onClick={() => router.push('/pixels')}
+              >
+                Cancel
+              </NeonButton>
+            </div>
+          </form>
+        </GlassCard>
+      </div>
+    </AppShell>
+  );
+}

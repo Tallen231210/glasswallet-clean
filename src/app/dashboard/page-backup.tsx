@@ -1,0 +1,263 @@
+'use client';
+
+// Disable static generation for this page
+export const dynamic = 'force-dynamic';
+
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { GlassCard } from '@/components/ui/GlassCard';
+import { NeonButton } from '@/components/ui/NeonButton';
+import { StatCard } from '@/components/ui/StatCard';
+import { Badge } from '@/components/ui/Badge';
+// Progress component replaced with direct div implementation
+import { AppShell } from '@/components/layout/AppShell';
+import ActivityFeed from '@/components/ui/ActivityFeedStub';
+
+// Simple Progress component
+const Progress = ({ value, className }: { value: number; className?: string }) => (
+  <div className={`w-full bg-gray-700 rounded-full ${className}`}>
+    <div 
+      className="bg-neon-green h-full rounded-full transition-all duration-300" 
+      style={{ width: `${Math.min(100, Math.max(0, value))}%` }}
+    />
+  </div>
+);
+
+export default function DashboardPage() {
+  const router = useRouter();
+  
+  // Mock user data for now
+  const user = { firstName: 'User' };
+  const isBusinessOwner = true;
+  const isSalesRep = false;
+  
+  // Different credit balances for different account types  
+  const [creditBalance] = useState(isBusinessOwner ? 127 : 25);
+  
+  // Mock stats
+  const stats = {
+    total: 247,
+    conversionRate: 89,
+    avgCreditScore: 742
+  };
+
+  return (
+    <AppShell 
+      headerTitle={isBusinessOwner ? "Business Dashboard" : isSalesRep ? "Sales Dashboard" : "Dashboard"}
+      headerSubtitle={`Welcome back, ${user?.firstName || 'User'}! Here's your overview.`}
+      headerActions={
+        <div className="flex gap-3">
+          <NeonButton variant="secondary" onClick={() => router.push('/leads')}>
+            View Leads
+          </NeonButton>
+          {isBusinessOwner && (
+            <NeonButton onClick={() => router.push('/performance')}>
+              Performance
+            </NeonButton>
+          )}
+        </div>
+      }
+    >
+      <div className="p-6 space-y-8 max-w-7xl mx-auto">
+        
+        {/* Welcome Section */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-white mb-2">
+                {isBusinessOwner ? "Business Overview" : isSalesRep ? "Sales Performance" : "Dashboard"}
+              </h1>
+              <p className="text-gray-400">
+                {isBusinessOwner 
+                  ? "Monitor your team's performance and lead conversion rates"
+                  : isSalesRep 
+                    ? "Track your individual sales metrics and goals"
+                    : "Your GlassWallet platform overview"
+                }
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <Badge variant={isBusinessOwner ? "success" : isSalesRep ? "neon" : "default"} size="lg">
+                {isBusinessOwner ? "Business Owner" : isSalesRep ? "Sales Rep" : "User"}
+              </Badge>
+              <Badge variant="success" size="lg">
+                Active
+              </Badge>
+            </div>
+          </div>
+        </div>
+
+        {/* Key Metrics */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <StatCard
+            title="Credit Balance"
+            value={creditBalance}
+            description="Available credits"
+            icon="💳"
+            variant="neon"
+            trend={isBusinessOwner ? "+15 this week" : "+5 this week"}
+          />
+          
+          <StatCard
+            title={isBusinessOwner ? "Team Leads" : "My Leads"}
+            value={isBusinessOwner ? stats.total : Math.floor(stats.total / 3)}
+            description="Total processed"
+            icon="👥"
+            variant="default"
+            trend={isBusinessOwner ? "+23% this month" : "+12% this week"}
+          />
+          
+          <StatCard
+            title="Qualification Rate"
+            value={`${stats.conversionRate}%`}
+            description="Above average"
+            icon="🎯"
+            variant="success"
+            trend="+5% vs last period"
+          />
+          
+          <StatCard
+            title="Avg Credit Score"
+            value={stats.avgCreditScore}
+            description="Quality leads"
+            icon="📊"
+            variant="success"
+            trend="+15 points"
+          />
+        </div>
+
+        {/* Quick Actions */}
+        <GlassCard className="p-6">
+          <h3 className="text-lg font-semibold text-white mb-4">Quick Actions</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <NeonButton 
+              className="flex items-center gap-2 justify-center p-4"
+              onClick={() => router.push('/leads/new')}
+            >
+              <span>📝</span>
+              Add New Lead
+            </NeonButton>
+            
+            <NeonButton 
+              variant="secondary"
+              className="flex items-center gap-2 justify-center p-4"
+              onClick={() => router.push('/leads')}
+            >
+              <span>👥</span>
+              View All Leads
+            </NeonButton>
+            
+            {isBusinessOwner && (
+              <NeonButton 
+                variant="secondary"
+                className="flex items-center gap-2 justify-center p-4"
+                onClick={() => router.push('/performance')}
+              >
+                <span>📈</span>
+                Team Performance
+              </NeonButton>
+            )}
+            
+            <NeonButton 
+              variant="secondary"
+              className="flex items-center gap-2 justify-center p-4"
+              onClick={() => router.push('/settings')}
+            >
+              <span>⚙️</span>
+              Settings
+            </NeonButton>
+          </div>
+        </GlassCard>
+
+        {/* Credit Usage Progress */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <GlassCard className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-white">Credit Usage</h3>
+              <Badge variant="neon">
+                {creditBalance} remaining
+              </Badge>
+            </div>
+            <div className="space-y-4">
+              <Progress 
+                value={isBusinessOwner ? 65 : 75} 
+                className="h-3"
+              />
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-400">This Month</span>
+                <span className="text-neon-green font-medium">
+                  {isBusinessOwner ? "35%" : "25%"} remaining
+                </span>
+              </div>
+              <p className="text-sm text-gray-400">
+                {isBusinessOwner 
+                  ? "Your team is on track with credit usage this month"
+                  : "You're efficiently using your credit allocation"
+                }
+              </p>
+            </div>
+          </GlassCard>
+
+          <ActivityFeed
+            maxItems={6}
+            compact={true}
+            onItemClick={(item) => {
+              console.log('Activity clicked:', item);
+              // Navigate based on activity type
+              if (item.type === 'lead_processed' || item.type === 'lead_qualified') {
+                router.push('/leads');
+              }
+            }}
+          />
+        </div>
+
+        {/* Getting Started (for new users) */}
+        {isBusinessOwner && (
+          <GlassCard className="p-6">
+            <h3 className="text-lg font-semibold text-white mb-4">🚀 Getting Started</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="text-center p-4 bg-white/5 rounded-lg">
+                <div className="w-12 h-12 bg-neon-green/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="text-neon-green text-xl">👥</span>
+                </div>
+                <h4 className="font-semibold text-white mb-2">Import Leads</h4>
+                <p className="text-gray-400 text-sm mb-3">
+                  Upload your lead list to start credit qualification
+                </p>
+                <NeonButton size="sm" onClick={() => router.push('/leads/new')}>
+                  Add Leads
+                </NeonButton>
+              </div>
+
+              <div className="text-center p-4 bg-white/5 rounded-lg">
+                <div className="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="text-blue-400 text-xl">📊</span>
+                </div>
+                <h4 className="font-semibold text-white mb-2">Track Performance</h4>
+                <p className="text-gray-400 text-sm mb-3">
+                  Monitor your team's conversion rates and metrics
+                </p>
+                <NeonButton size="sm" variant="secondary" onClick={() => router.push('/performance')}>
+                  View Analytics
+                </NeonButton>
+              </div>
+
+              <div className="text-center p-4 bg-white/5 rounded-lg">
+                <div className="w-12 h-12 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="text-purple-400 text-xl">⚙️</span>
+                </div>
+                <h4 className="font-semibold text-white mb-2">Configure Settings</h4>
+                <p className="text-gray-400 text-sm mb-3">
+                  Set up your account preferences and integrations
+                </p>
+                <NeonButton size="sm" variant="secondary" onClick={() => router.push('/settings')}>
+                  Setup Account
+                </NeonButton>
+              </div>
+            </div>
+          </GlassCard>
+        )}
+      </div>
+    </AppShell>
+  );
+}

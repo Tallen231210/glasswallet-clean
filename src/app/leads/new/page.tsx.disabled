@@ -1,0 +1,388 @@
+'use client';
+
+// Disable static generation for this page
+export const dynamic = 'force-dynamic';
+
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { GlassCard } from '@/components/ui/GlassCard';
+import { NeonButton } from '@/components/ui/NeonButton';
+import { Input } from '@/components/ui/Input';
+import { FormField } from '@/components/ui/FormField';
+import { AppShell } from '@/components/layout/AppShell';
+
+interface CreateLeadInput {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+  consentGiven: boolean;
+}
+
+const NewLeadForm = () => {
+  const router = useRouter();
+  const [showSuccess, setShowSuccess] = useState(false);
+  
+  const [formData, setFormData] = useState<CreateLeadInput>({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    address: '',
+    city: '',
+    state: '',
+    zipCode: '',
+    consentGiven: false,
+  });
+  
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const validateField = (name: string, value: any): string => {
+    switch (name) {
+      case 'firstName':
+        return !value || value.length < 1 ? 'First name is required' : '';
+      case 'lastName':
+        return !value || value.length < 1 ? 'Last name is required' : '';
+      case 'email':
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return !value ? 'Email is required' : !emailRegex.test(value) ? 'Invalid email format' : '';
+      case 'phone':
+        if (value && !/^\(\d{3}\) \d{3}-\d{4}$/.test(value)) {
+          return 'Phone must be in format (XXX) XXX-XXXX';
+        }
+        return '';
+      case 'zipCode':
+        if (value && !/^\d{5}(-\d{4})?$/.test(value)) {
+          return 'Zip code must be in format XXXXX or XXXXX-XXXX';
+        }
+        return '';
+      case 'state':
+        if (value && value.length !== 2) {
+          return 'State must be 2 characters (e.g., CA)';
+        }
+        return '';
+      case 'consentGiven':
+        return !value ? 'Consent is required to proceed' : '';
+      default:
+        return '';
+    }
+  };
+
+  const handleInputChange = (name: string, value: any) => {
+    setFormData(prev => ({ ...prev, [name]: value }));
+    
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  const formatPhoneNumber = (value: string): string => {
+    // Remove all non-digit characters
+    const digits = value.replace(/\D/g, '');
+    
+    // Format as (XXX) XXX-XXXX
+    if (digits.length >= 10) {
+      return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6, 10)}`;
+    } else if (digits.length >= 6) {
+      return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+    } else if (digits.length >= 3) {
+      return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+    }
+    return digits;
+  };
+
+  const validateForm = (): boolean => {
+    const newErrors: Record<string, string> = {};
+    
+    Object.keys(formData).forEach(key => {
+      const error = validateField(key, formData[key as keyof CreateLeadInput]);
+      if (error) {
+        newErrors[key] = error;
+      }
+    });
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!validateForm()) {
+      showToast({
+        title: 'Validation Error',
+        message: 'Please correct the errors below',
+        variant: 'error'
+      });
+      return;
+    }
+    
+    setIsSubmitting(true);
+    
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      console.log('Creating lead:', formData);
+      
+      setShowSuccess(true);
+      
+      // Redirect to leads list
+      setTimeout(() => {
+        router.push('/leads');
+      }, 2000);
+      
+    } catch (error) {
+      console.error('Error creating lead:', error);
+      alert('Failed to create lead: ' + (error instanceof Error ? error.message : 'Unknown error'));
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <AppShell 
+      headerActions={
+        <NeonButton 
+          variant="secondary" 
+          onClick={() => router.push('/leads')}
+        >
+          Back to Leads
+        </NeonButton>
+      }
+    >
+      <div className="p-6 max-w-4xl mx-auto">
+
+        {/* Form Card */}
+        <GlassCard className="p-8">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Personal Information Section */}
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold text-white mb-6 border-b border-white/10 pb-3">
+                Personal Information
+              </h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormField 
+                  label="First Name" 
+                  required
+                  error={errors.firstName}
+                >
+                  <Input
+                    placeholder="Enter first name..."
+                    value={formData.firstName}
+                    onChange={(e) => handleInputChange('firstName', e.target.value)}
+                    className={errors.firstName ? 'border-red-500' : ''}
+                  />
+                </FormField>
+
+                <FormField 
+                  label="Last Name" 
+                  required
+                  error={errors.lastName}
+                >
+                  <Input
+                    placeholder="Enter last name..."
+                    value={formData.lastName}
+                    onChange={(e) => handleInputChange('lastName', e.target.value)}
+                    className={errors.lastName ? 'border-red-500' : ''}
+                  />
+                </FormField>
+
+                <FormField 
+                  label="Email Address" 
+                  required
+                  error={errors.email}
+                >
+                  <Input
+                    type="email"
+                    placeholder="Enter email address..."
+                    value={formData.email}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    className={errors.email ? 'border-red-500' : ''}
+                  />
+                  {!errors.email && <p className="text-xs text-gray-400 mt-1">Primary contact email for the lead</p>}
+                </FormField>
+
+                <FormField 
+                  label="Phone Number" 
+                  error={errors.phone}
+                >
+                  <Input
+                    type="tel"
+                    placeholder="(XXX) XXX-XXXX"
+                    value={formData.phone}
+                    onChange={(e) => handleInputChange('phone', formatPhoneNumber(e.target.value))}
+                    className={errors.phone ? 'border-red-500' : ''}
+                  />
+                  {!errors.phone && <p className="text-xs text-gray-400 mt-1">Format: (XXX) XXX-XXXX</p>}
+                </FormField>
+              </div>
+            </div>
+
+            {/* Address Information Section */}
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold text-white mb-6 border-b border-white/10 pb-3">
+                Address Information
+              </h3>
+              
+              <div className="space-y-6">
+                <FormField 
+                  label="Street Address" 
+                  error={errors.address}
+                >
+                  <Input
+                    placeholder="Enter street address..."
+                    value={formData.address}
+                    onChange={(e) => handleInputChange('address', e.target.value)}
+                    className={errors.address ? 'border-red-500' : ''}
+                  />
+                  <p className="text-xs text-gray-400 mt-1">Optional - for more accurate credit reporting</p>
+                </FormField>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <FormField 
+                    label="City" 
+                    error={errors.city}
+                  >
+                    <Input
+                      placeholder="Enter city..."
+                      value={formData.city}
+                      onChange={(e) => handleInputChange('city', e.target.value)}
+                      className={errors.city ? 'border-red-500' : ''}
+                    />
+                  </FormField>
+
+                  <FormField 
+                    label="State" 
+                    error={errors.state}
+                  >
+                    <Input
+                      placeholder="CA"
+                      maxLength={2}
+                      value={formData.state}
+                      onChange={(e) => handleInputChange('state', e.target.value.toUpperCase())}
+                      className={errors.state ? 'border-red-500' : ''}
+                    />
+                    <p className="text-xs text-gray-400 mt-1">2-letter code (e.g., CA)</p>
+                  </FormField>
+
+                  <FormField 
+                    label="ZIP Code" 
+                    error={errors.zipCode}
+                  >
+                    <Input
+                      placeholder="12345 or 12345-6789"
+                      value={formData.zipCode}
+                      onChange={(e) => handleInputChange('zipCode', e.target.value)}
+                      className={errors.zipCode ? 'border-red-500' : ''}
+                    />
+                    <p className="text-xs text-gray-400 mt-1">5 or 9 digit format</p>
+                  </FormField>
+                </div>
+              </div>
+            </div>
+
+            {/* Consent Section */}
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold text-white mb-6 border-b border-white/10 pb-3">
+                Consent & Compliance
+              </h3>
+              
+              <div className="space-y-4">
+                <FormField error={errors.consentGiven}>
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formData.consentGiven}
+                      onChange={(e) => handleInputChange('consentGiven', e.target.checked)}
+                      className="mt-1 w-4 h-4 text-neon-green bg-transparent border-gray-300 rounded focus:ring-neon-green focus:ring-2"
+                    />
+                    <div>
+                      <span className="text-white font-medium">FCRA Compliance Consent</span>
+                      <p className="text-gray-400 text-sm mt-1">
+                        The lead has provided written consent for credit reporting in compliance with FCRA regulations. 
+                        This is required before performing any credit pulls.
+                      </p>
+                    </div>
+                  </label>
+                </FormField>
+
+                {!formData.consentGiven && (
+                  <div className="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+                    <div className="flex items-start gap-3">
+                      <span className="text-yellow-400 text-lg">⚠️</span>
+                      <div>
+                        <h4 className="text-yellow-300 font-medium">Consent Required</h4>
+                        <p className="text-yellow-200 text-sm mt-1">
+                          FCRA compliance requires explicit written consent from the lead before performing credit checks. 
+                          Please ensure proper documentation is collected.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Form Actions */}
+            <div className="flex gap-4 pt-6 border-t border-white/10">
+              <NeonButton 
+                type="submit" 
+                disabled={isSubmitting}
+                className="flex-1 md:flex-none"
+              >
+                {isSubmitting ? 'Creating Lead...' : 'Create Lead'}
+              </NeonButton>
+              
+              <NeonButton 
+                type="button"
+                variant="secondary"
+                onClick={() => router.push('/leads')}
+                disabled={isSubmitting}
+              >
+                Cancel
+              </NeonButton>
+            </div>
+          </form>
+        </GlassCard>
+
+        {/* Success Message */}
+        {showSuccess && (
+          <GlassCard className="mt-6 p-6">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-green-400 text-3xl">✅</span>
+              </div>
+              <h3 className="text-lg font-semibold text-white mb-2">Lead Created Successfully!</h3>
+              <p className="text-gray-400 mb-4">Redirecting to leads page...</p>
+            </div>
+          </GlassCard>
+        )}
+
+        {/* Loading State */}
+        {isSubmitting && (
+          <GlassCard className="mt-6 p-6">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-neon-green/20 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+                <span className="text-neon-green text-3xl">⏳</span>
+              </div>
+              <h3 className="text-lg font-semibold text-white mb-2">Creating Lead...</h3>
+              <p className="text-gray-400">Validating data and processing request...</p>
+            </div>
+          </GlassCard>
+        )}
+      </div>
+    </AppShell>
+  );
+};
+
+export default function NewLeadPage() {
+  return <NewLeadForm />;
+}

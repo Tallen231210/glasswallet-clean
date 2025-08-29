@@ -1,0 +1,331 @@
+'use client';
+
+// Disable static generation for this page
+export const dynamic = 'force-dynamic';
+
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { GlassCard } from '@/components/ui/GlassCard';
+import { NeonButton } from '@/components/ui/NeonButton';
+import { Badge } from '@/components/ui/Badge';
+import { StatCard } from '@/components/ui/StatCard';
+import { AppShell } from '@/components/layout/AppShell';
+
+// Mock analytics data
+const mockAnalytics = {
+  overview: {
+    totalConnections: 3,
+    activeConnections: 2,
+    totalSyncs: 1247,
+    successfulSyncs: 1198,
+    totalLeadsSynced: 4892,
+    avgSyncTime: 2.3
+  },
+  platformBreakdown: [
+    {
+      platformType: 'META',
+      connections: 1,
+      syncs: 523,
+      leadsSynced: 2047,
+      successRate: 0.967,
+      avgValue: 127.45
+    },
+    {
+      platformType: 'GOOGLE_ADS',
+      connections: 1,
+      syncs: 398,
+      leadsSynced: 1589,
+      successRate: 0.945,
+      avgValue: 143.22
+    },
+    {
+      platformType: 'TIKTOK',
+      connections: 1,
+      syncs: 326,
+      leadsSynced: 1256,
+      successRate: 0.912,
+      avgValue: 98.76
+    }
+  ],
+  qualityMetrics: {
+    qualifiedLeads: 3847,
+    whitelistLeads: 2941,
+    blacklistLeads: 234,
+    averageCreditScore: 687,
+    valueDistribution: [
+      { tier: 'Premium (750+)', count: 1247, value: 189.34 },
+      { tier: 'Good (650-749)', count: 2134, value: 134.67 },
+      { tier: 'Fair (600-649)', count: 1289, value: 98.45 },
+      { tier: 'Poor (<600)', count: 222, value: 45.23 }
+    ]
+  },
+  recentActivity: [
+    {
+      id: '1',
+      timestamp: '2024-01-15T14:30:00Z',
+      platformType: 'META',
+      eventType: 'lead_sync',
+      leadCount: 47,
+      status: 'success' as const,
+      connectionName: 'Meta Pixel - Main'
+    },
+    {
+      id: '2',
+      timestamp: '2024-01-15T13:45:00Z',
+      platformType: 'GOOGLE_ADS',
+      eventType: 'conversion_sync',
+      leadCount: 23,
+      status: 'success' as const,
+      connectionName: 'Google Ads - Primary'
+    },
+    {
+      id: '3',
+      timestamp: '2024-01-15T12:15:00Z',
+      platformType: 'TIKTOK',
+      eventType: 'event_sync',
+      leadCount: 18,
+      status: 'failed' as const,
+      connectionName: 'TikTok Pixel - Campaign'
+    }
+  ]
+};
+
+export default function PixelAnalyticsPage() {
+  const router = useRouter();
+  
+  const [analytics] = useState(mockAnalytics);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    // Simulate refresh
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    setRefreshing(false);
+    alert('Analytics refreshed!');
+  };
+
+  const getPlatformIcon = (platformType: string) => {
+    switch (platformType) {
+      case 'META': return '📘';
+      case 'GOOGLE_ADS': return '🔍';
+      case 'TIKTOK': return '🎵';
+      default: return '📊';
+    }
+  };
+
+  const getPlatformName = (platformType: string) => {
+    switch (platformType) {
+      case 'META': return 'Meta (Facebook)';
+      case 'GOOGLE_ADS': return 'Google Ads';
+      case 'TIKTOK': return 'TikTok Ads';
+      default: return platformType;
+    }
+  };
+
+  const formatEventType = (eventType: string) => {
+    return eventType.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  };
+
+  return (
+    <AppShell 
+      headerTitle="Pixel Analytics"
+      headerSubtitle="Monitor pixel performance and lead synchronization metrics"
+      headerActions={
+        <div className="flex gap-3">
+          <NeonButton 
+            variant="secondary" 
+            onClick={handleRefresh}
+            disabled={refreshing}
+          >
+            {refreshing ? 'Refreshing...' : '🔄 Refresh Data'}
+          </NeonButton>
+          <NeonButton onClick={() => router.push('/pixels')}>
+            Back to Pixels
+          </NeonButton>
+        </div>
+      }
+    >
+      <div className="p-6 space-y-8 max-w-7xl mx-auto">
+        <div className="space-y-8">
+          {/* Overview Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+            <StatCard
+              title="Connections"
+              value={analytics.overview.totalConnections}
+              icon="🔗"
+              variant="default"
+              description={`${analytics.overview.activeConnections} active`}
+            />
+            <StatCard
+              title="Total Syncs"
+              value={analytics.overview.totalSyncs.toLocaleString()}
+              icon="🔄"
+              variant="neon"
+              description={`${(analytics.overview.successfulSyncs / analytics.overview.totalSyncs * 100).toFixed(1)}% success`}
+            />
+            <StatCard
+              title="Leads Synced"
+              value={analytics.overview.totalLeadsSynced.toLocaleString()}
+              icon="👥"
+              variant="success"
+              description="Total leads processed"
+            />
+            <StatCard
+              title="Avg Sync Time"
+              value={`${analytics.overview.avgSyncTime}s`}
+              icon="⏱️"
+              variant="default"
+              description="Average sync duration"
+            />
+            <StatCard
+              title="Success Rate"
+              value={`${(analytics.overview.successfulSyncs / analytics.overview.totalSyncs * 100).toFixed(1)}%`}
+              icon="✅"
+              variant="success"
+              description="Overall success rate"
+            />
+            <StatCard
+              title="Avg Credit Score"
+              value={analytics.qualityMetrics.averageCreditScore}
+              icon="📊"
+              variant="warning"
+              description="Portfolio average"
+            />
+          </div>
+
+          {/* Platform Breakdown */}
+          <GlassCard className="p-6">
+            <h3 className="text-xl font-semibold text-white mb-6">Platform Performance</h3>
+            <div className="space-y-4">
+              {analytics.platformBreakdown.map((platform) => (
+                <div key={platform.platformType} className="flex items-center justify-between p-4 bg-white/5 rounded-lg">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
+                      <span className="text-xl">{getPlatformIcon(platform.platformType)}</span>
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-white">{getPlatformName(platform.platformType)}</h4>
+                      <p className="text-sm text-gray-400">{platform.connections} connection(s)</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex gap-8 text-center">
+                    <div>
+                      <p className="text-sm text-gray-400">Syncs</p>
+                      <p className="font-semibold text-white">{platform.syncs}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-400">Leads</p>
+                      <p className="font-semibold text-white">{platform.leadsSynced.toLocaleString()}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-400">Success Rate</p>
+                      <p className="font-semibold text-white">{(platform.successRate * 100).toFixed(1)}%</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-400">Avg Value</p>
+                      <p className="font-semibold text-neon-green">${platform.avgValue.toFixed(2)}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </GlassCard>
+
+          {/* Quality Metrics */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <GlassCard className="p-6">
+              <h3 className="text-xl font-semibold text-white mb-6">Lead Quality Distribution</h3>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400">Qualified Leads</span>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="success">{analytics.qualityMetrics.qualifiedLeads.toLocaleString()}</Badge>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400">Whitelist Leads</span>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="neon">{analytics.qualityMetrics.whitelistLeads.toLocaleString()}</Badge>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400">Blacklist Leads</span>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="default">{analytics.qualityMetrics.blacklistLeads.toLocaleString()}</Badge>
+                  </div>
+                </div>
+              </div>
+            </GlassCard>
+
+            <GlassCard className="p-6">
+              <h3 className="text-xl font-semibold text-white mb-6">Value Distribution</h3>
+              <div className="space-y-4">
+                {analytics.qualityMetrics.valueDistribution.map((tier, index) => (
+                  <div key={index} className="flex justify-between items-center">
+                    <div>
+                      <span className="text-white font-medium">{tier.tier}</span>
+                      <p className="text-sm text-gray-400">{tier.count.toLocaleString()} leads</p>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-neon-green font-semibold">${tier.value.toFixed(2)}</span>
+                      <p className="text-sm text-gray-400">avg value</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </GlassCard>
+          </div>
+
+          {/* Recent Activity */}
+          <GlassCard className="p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-semibold text-white">Recent Activity</h3>
+              <Badge variant="default">Last 7 days</Badge>
+            </div>
+            
+            <div className="space-y-3">
+              {analytics.recentActivity.slice(0, 10).map((activity) => (
+                <div key={activity.id} className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center">
+                      <span className="text-sm">{getPlatformIcon(activity.platformType)}</span>
+                    </div>
+                    <div>
+                      <p className="text-white font-medium">
+                        {formatEventType(activity.eventType)}
+                      </p>
+                      <p className="text-sm text-gray-400">
+                        {activity.connectionName} • {activity.leadCount} leads
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-3">
+                    <Badge 
+                      variant={activity.status === 'success' ? 'success' : 'default'}
+                    >
+                      {activity.status}
+                    </Badge>
+                    <span className="text-sm text-gray-400">
+                      {new Date(activity.timestamp).toLocaleDateString()}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            <div className="mt-6 text-center">
+              <NeonButton 
+                variant="secondary"
+                onClick={() => alert('Full activity log coming soon!')}
+              >
+                View Full Activity Log
+              </NeonButton>
+            </div>
+          </GlassCard>
+        </div>
+      </div>
+    </AppShell>
+  );
+}

@@ -15,9 +15,9 @@ export const NeonButton: React.FC<NeonButtonProps> = ({
   const baseClasses = 'relative font-medium transition-all duration-300 focus-neon';
   
   const variantClasses = {
-    primary: 'bg-neon-green text-deep-navy-start hover:shadow-neon-glow',
-    secondary: 'glass-card hover:glass-card-hover text-text-primary',
-    danger: 'bg-bright-red text-white hover:bg-red-600',
+    primary: 'text-black hover:shadow-2xl',
+    secondary: 'glass-card hover:glass-card-hover text-white',
+    danger: 'bg-red-600 text-white hover:bg-red-700',
     success: 'bg-green-500 text-white hover:bg-green-600 hover:shadow-green-500/20',
   };
 
@@ -39,6 +39,9 @@ export const NeonButton: React.FC<NeonButtonProps> = ({
         disabled && disabledClasses,
         className
       )}
+      style={variant === 'primary' ? {
+        background: 'var(--neon-green)',
+      } : {}}
       onClick={onClick}
       disabled={disabled || loading}
     >

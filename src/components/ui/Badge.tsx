@@ -14,7 +14,7 @@ const badgeVariants = {
   error: 'bg-red-500/20 text-red-300 border-red-500/30',
   danger: 'bg-red-500/20 text-red-300 border-red-500/30', // Maps to same as error
   info: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
-  neon: 'bg-neon-green/20 text-neon-green border-neon-green/30 shadow-neon-glow',
+  neon: 'text-white shadow-lg',
 };
 
 const badgeSizes = {
@@ -42,13 +42,17 @@ export const Badge: React.FC<BadgeProps> = ({
         badgeSizes[size],
         className
       )}
+      style={variant === 'neon' ? {
+        backgroundColor: 'rgba(0, 255, 136, 0.2)',
+        borderColor: 'rgba(0, 255, 136, 0.3)',
+        color: 'var(--neon-green)'
+      } : {}}
       {...props}
     >
       {dot && (
         <div 
           className={cn(
             'w-1.5 h-1.5 rounded-full',
-            variant === 'neon' ? 'bg-neon-green' :
             variant === 'success' ? 'bg-green-400' :
             variant === 'warning' ? 'bg-yellow-400' :
             variant === 'error' ? 'bg-red-400' :
@@ -56,9 +60,12 @@ export const Badge: React.FC<BadgeProps> = ({
             variant === 'info' ? 'bg-blue-400' :
             'bg-gray-400'
           )}
+          style={variant === 'neon' ? {backgroundColor: 'var(--neon-green)'} : {}}
         />
       )}
       {children}
     </div>
   );
 };
+
+export default Badge;

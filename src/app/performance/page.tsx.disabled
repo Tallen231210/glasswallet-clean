@@ -1,6 +1,5 @@
 'use client';
 
-
 // Disable static generation for this page
 export const dynamic = 'force-dynamic';
 
@@ -8,13 +7,44 @@ import React, { useState } from 'react';
 import { AppShell } from '@/components/layout/AppShell';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { StatCard } from '@/components/ui/StatCard';
-import { InteractiveCard } from '@/components/ui/InteractiveCard';
-import { AnimatedCounter } from '@/components/ui/InteractiveCard';
-import { LineChart, DonutChart } from '@/components/ui/Charts';
 import { Badge } from '@/components/ui/Badge';
 import { NeonButton } from '@/components/ui/NeonButton';
-import { Progress } from '@/components/ui/Progress';
 import { useUser } from '@/contexts/UserContext';
+
+// Simple Progress component replacement
+const Progress = ({ value, className }: { value: number; className?: string }) => (
+  <div className={`w-full bg-gray-700 rounded-full ${className}`}>
+    <div 
+      className="bg-neon-green h-full rounded-full transition-all duration-300" 
+      style={{ width: `${Math.min(100, Math.max(0, value))}%` }}
+    />
+  </div>
+);
+
+// Simple chart placeholders
+const LineChart = ({ data, height }: { data: any[]; height: number }) => (
+  <div className="flex items-end justify-between h-32 bg-white/5 rounded-lg p-4">
+    {data.map((item, index) => (
+      <div key={index} className="flex flex-col items-center space-y-2">
+        <div 
+          className="bg-neon-green rounded-t" 
+          style={{ height: `${(item.value / Math.max(...data.map(d => d.value))) * 80}px`, width: '20px' }}
+        />
+        <span className="text-xs text-gray-400">{item.label}</span>
+      </div>
+    ))}
+  </div>
+);
+
+const DonutChart = ({ data }: { data: any[] }) => (
+  <div className="flex items-center justify-center h-32 bg-white/5 rounded-lg">
+    <div className="text-center">
+      <div className="text-3xl text-neon-green mb-2">📊</div>
+      <p className="text-white font-medium">Credit Score</p>
+      <p className="text-gray-400 text-sm">Distribution Chart</p>
+    </div>
+  </div>
+);
 
 export default function PerformancePage() {
   const { user, isSalesRep } = useUser();
@@ -104,45 +134,41 @@ export default function PerformancePage() {
 
         {/* Key Performance Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <InteractiveCard hoverEffect="glow" clickEffect="ripple">
-            <StatCard
-              title="Leads Processed"
-              value={performanceData.leadsProcessed}
-              description="This week"
-              trend="+12%"
-              icon="👥"
-            />
-          </InteractiveCard>
+          <StatCard
+            title="Leads Processed"
+            value={performanceData.leadsProcessed}
+            description="This week"
+            trend="+12%"
+            icon="👥"
+            variant="neon"
+          />
 
-          <InteractiveCard hoverEffect="glow" clickEffect="ripple">
-            <StatCard
-              title="Credits Used"
-              value={performanceData.creditsUsed}
-              description="This week"
-              trend="+8%"
-              icon="💳"
-            />
-          </InteractiveCard>
+          <StatCard
+            title="Credits Used"
+            value={performanceData.creditsUsed}
+            description="This week"
+            trend="+8%"
+            icon="💳"
+            variant="default"
+          />
 
-          <InteractiveCard hoverEffect="glow" clickEffect="ripple">
-            <StatCard
-              title="Qualification Rate"
-              value={`${performanceData.qualificationRate}%`}
-              description="Above average"
-              trend="+5%"
-              icon="🎯"
-            />
-          </InteractiveCard>
+          <StatCard
+            title="Qualification Rate"
+            value={`${performanceData.qualificationRate}%`}
+            description="Above average"
+            trend="+5%"
+            icon="🎯"
+            variant="success"
+          />
 
-          <InteractiveCard hoverEffect="glow" clickEffect="ripple">
-            <StatCard
-              title="Avg Credit Score"
-              value={performanceData.avgCreditScore}
-              description="Quality leads"
-              trend="+15%"
-              icon="📊"
-            />
-          </InteractiveCard>
+          <StatCard
+            title="Avg Credit Score"
+            value={performanceData.avgCreditScore}
+            description="Quality leads"
+            trend="+15%"
+            icon="📊"
+            variant="success"
+          />
         </div>
 
         {/* Goals Progress */}

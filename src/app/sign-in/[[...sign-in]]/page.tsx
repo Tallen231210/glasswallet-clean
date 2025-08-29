@@ -4,7 +4,7 @@
 export const dynamic = 'force-dynamic';
 
 import { SignIn } from '@clerk/nextjs';
-import { GlassCard } from '@/components/ui';
+import { GlassCard } from '@/components/ui/GlassCard';
 
 export default function SignInPage() {
   return (

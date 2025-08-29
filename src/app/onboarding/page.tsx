@@ -1,84 +1,64 @@
 'use client';
 
-
 // Disable static generation for this page
 export const dynamic = 'force-dynamic';
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { AccountType } from '@/types/user';
-import { useUser } from '@/contexts/UserContext';
-import { AccountTypeSelector } from '@/components/ui/AccountTypeSelector';
 import { GlassCard } from '@/components/ui/GlassCard';
+import { NeonButton } from '@/components/ui/NeonButton';
 
 export default function OnboardingPage() {
   const router = useRouter();
-  const { setAccountType } = useUser();
-
-  const handleAccountTypeSelect = (accountType: AccountType) => {
-    setAccountType(accountType);
-    
-    // Redirect to appropriate dashboard after selection
-    setTimeout(() => {
-      router.push('/dashboard');
-    }, 500);
-  };
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center p-6">
-      <div className="w-full max-w-7xl">
-        {/* Welcome Section */}
-        <div className="text-center mb-12">
-          <div className="flex items-center justify-center mb-6">
-            <div className="relative">
-              <div className="w-16 h-16 bg-gradient-to-br from-neon-green to-electric-green rounded-2xl flex items-center justify-center shadow-2xl shadow-neon-green/30">
-                <span className="text-deep-navy-start font-bold text-2xl">G</span>
-              </div>
-              <div className="absolute -top-2 -right-2 w-6 h-6 bg-neon-green rounded-full animate-pulse shadow-lg shadow-neon-green/50"></div>
-            </div>
-          </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-neon-green to-electric-green">GlassWallet</span>
-          </h1>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-            The AI-powered credit data platform that transforms lead qualification with real-time credit intelligence and automated pixel optimization.
-          </p>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white">
+      <div className="p-6 space-y-8 max-w-4xl mx-auto">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-white mb-4">🚀 Welcome to GlassWallet!</h1>
+          <p className="text-gray-400 text-lg">Let's get your credit data platform set up</p>
         </div>
 
-        {/* Account Type Selection */}
-        <AccountTypeSelector
-          onSelect={handleAccountTypeSelect}
-          className="mb-8"
-          showComparison={true}
-        />
-
-        {/* Trust Indicators */}
-        <div className="mt-16">
-          <GlassCard className="p-8 text-center">
-            <h3 className="text-xl font-bold text-white mb-6">Trusted by Industry Leaders</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-              {[
-                { name: 'FCRA Compliant', icon: '🛡️' },
-                { name: 'Bank-Grade Security', icon: '🔒' },
-                { name: '99.9% Uptime SLA', icon: '⚡' },
-                { name: 'Real-Time Processing', icon: '🚀' }
-              ].map((item, index) => (
-                <div key={index} className="flex flex-col items-center gap-3">
-                  <div className="text-3xl">{item.icon}</div>
-                  <p className="text-sm font-medium text-gray-300">{item.name}</p>
-                </div>
-              ))}
-            </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <GlassCard className="p-6 text-center">
+            <div className="text-4xl mb-4">✅</div>
+            <h3 className="text-lg font-semibold text-white mb-2">Account Created</h3>
+            <p className="text-gray-400 text-sm">Your GlassWallet account is ready</p>
+          </GlassCard>
+          
+          <GlassCard className="p-6 text-center">
+            <div className="text-4xl mb-4">🔧</div>
+            <h3 className="text-lg font-semibold text-white mb-2">Platform Setup</h3>
+            <p className="text-gray-400 text-sm">Configure your credit API integrations</p>
+          </GlassCard>
+          
+          <GlassCard className="p-6 text-center">
+            <div className="text-4xl mb-4">🎯</div>
+            <h3 className="text-lg font-semibold text-white mb-2">Start Processing</h3>
+            <p className="text-gray-400 text-sm">Begin lead qualification and pixel sync</p>
           </GlassCard>
         </div>
 
-        {/* Get Started CTA */}
-        <div className="text-center mt-12">
-          <p className="text-gray-400 text-sm">
-            Need help choosing the right plan? 
-            <span className="text-neon-green cursor-pointer hover:underline ml-1">
-              Schedule a consultation with our team
-            </span>
+        <GlassCard className="p-8 text-center">
+          <h2 className="text-2xl font-bold text-white mb-4">Ready to Get Started?</h2>
+          <p className="text-gray-400 mb-8 max-w-2xl mx-auto">
+            Your GlassWallet platform is configured and ready for credit data processing. 
+            Access your dashboard to begin managing leads and integrating with advertising pixels.
+          </p>
+          
+          <div className="flex gap-4 justify-center">
+            <NeonButton onClick={() => router.push('/dashboard')} className="px-8 py-3">
+              Go to Dashboard
+            </NeonButton>
+            <NeonButton variant="secondary" onClick={() => router.push('/leads')} className="px-8 py-3">
+              View Leads
+            </NeonButton>
+          </div>
+        </GlassCard>
+
+        <div className="text-center">
+          <p className="text-gray-500 text-sm">
+            💡 Need help? Check out our documentation or contact support
           </p>
         </div>
       </div>

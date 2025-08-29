@@ -382,4 +382,4 @@ export const PageLoading: React.FC<PageLoadingProps> = ({
       </div>
     </div>
   );
-};
+};export default EnhancedLoading;

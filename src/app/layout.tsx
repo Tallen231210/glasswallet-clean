@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { ClerkProvider } from '@clerk/nextjs';
 import { UserProvider } from '@/contexts/UserContext';
@@ -10,6 +10,11 @@ const inter = Inter({
   display: "swap",
 });
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+};
+
 export const metadata: Metadata = {
   title: "GlassWallet - Credit Data API Integration Platform",
   description: "Enable real-time credit qualification with advanced pixel optimization for ad targeting",
@@ -18,7 +23,6 @@ export const metadata: Metadata = {
   creator: "GlassWallet",
   publisher: "GlassWallet",
   robots: "index, follow",
-  viewport: "width=device-width, initial-scale=1",
 };
 
 export default function RootLayout({
@@ -27,7 +31,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
+    <ClerkProvider
+      appearance={{
+        baseTheme: undefined,
+        variables: { colorPrimary: '#00ff88' }
+      }}
+      afterSignInUrl="/dashboard"
+      afterSignUpUrl="/onboarding"
+      signInUrl="/sign-in"
+      signUpUrl="/sign-up"
+    >
       <html lang="en" className="h-full">
         <body className={`${inter.variable} font-sans h-full antialiased`}>
           <UserProvider>

@@ -1,0 +1,403 @@
+'use client';
+
+// Disable static generation for this page
+export const dynamic = 'force-dynamic';
+
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { GlassCard } from '@/components/ui/GlassCard';
+import { NeonButton } from '@/components/ui/NeonButton';
+import { Badge } from '@/components/ui/Badge';
+import { StatCard } from '@/components/ui/StatCard';
+import { Input } from '@/components/ui/Input';
+import { FormField } from '@/components/ui/FormField';
+import { AppShell } from '@/components/layout/AppShell';
+
+interface TaggingRule {
+  id: string;
+  name: string;
+  condition: string;
+  action: string;
+  tags: string[];
+  priority: number;
+  active: boolean;
+  description: string;
+}
+
+export default function LeadRulesPage() {
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState<'rules' | 'create' | 'analytics'>('rules');
+  const [showCreateForm, setShowCreateForm] = useState(false);
+
+  // Mock data for demonstration
+  const [taggingRules] = useState<TaggingRule[]>([
+    {
+      id: '1',
+      name: 'High Credit Score Premium',
+      condition: 'Credit Score >= 750',
+      action: 'Add Tags',
+      tags: ['premium', 'high-value', 'priority'],
+      priority: 1,
+      active: true,
+      description: 'Automatically tag leads with credit scores above 750 as premium prospects'
+    },
+    {
+      id: '2',
+      name: 'Business Owner Detection',
+      condition: 'Email contains company domain AND Phone format is business',
+      action: 'Add Tags',
+      tags: ['business-owner', 'b2b-prospect'],
+      priority: 2,
+      active: true,
+      description: 'Identify and tag potential business owners based on contact information'
+    },
+    {
+      id: '3',
+      name: 'Geographic Routing',
+      condition: 'State in [CA, NY, FL, TX]',
+      action: 'Assign Rep',
+      tags: ['tier-1-market'],
+      priority: 3,
+      active: true,
+      description: 'Route leads from major markets to specialized sales representatives'
+    },
+    {
+      id: '4',
+      name: 'Low Quality Filter',
+      condition: 'Credit Score < 600 OR Email is generic',
+      action: 'Flag for Review',
+      tags: ['requires-review', 'low-priority'],
+      priority: 4,
+      active: false,
+      description: 'Flag potentially low-quality leads for manual review'
+    }
+  ]);
+
+  const ruleStats = {
+    totalRules: taggingRules.length,
+    activeRules: taggingRules.filter(r => r.active).length,
+    processedToday: 247,
+    automationRate: 92
+  };
+
+  const TabButton = ({ tab, label, isActive, onClick }: {
+    tab: string;
+    label: string;
+    isActive: boolean;
+    onClick: () => void;
+  }) => (
+    <button
+      onClick={onClick}
+      className={`px-6 py-3 rounded-lg text-sm font-medium transition-all ${
+        isActive
+          ? 'bg-neon-green text-black shadow-lg'
+          : 'bg-white/5 text-gray-300 hover:bg-white/10'
+      }`}
+    >
+      {label}
+    </button>
+  );
+
+  return (
+    <AppShell 
+      headerTitle="Lead Tagging Rules"
+      headerSubtitle="Automated lead classification and routing system"
+      headerActions={
+        <div className="flex gap-3">
+          <NeonButton variant="secondary" onClick={() => router.push('/leads')}>
+            Back to Leads
+          </NeonButton>
+          <NeonButton onClick={() => setShowCreateForm(true)}>
+            ➕ Create Rule
+          </NeonButton>
+        </div>
+      }
+    >
+      <div className="p-6 space-y-8 max-w-7xl mx-auto">
+
+        {/* Tab Navigation */}
+        <div className="flex gap-2 p-1 bg-white/5 rounded-xl w-fit">
+          <TabButton
+            tab="rules"
+            label="📋 Rules"
+            isActive={activeTab === 'rules'}
+            onClick={() => setActiveTab('rules')}
+          />
+          <TabButton
+            tab="create"
+            label="➕ Create"
+            isActive={activeTab === 'create'}
+            onClick={() => setActiveTab('create')}
+          />
+          <TabButton
+            tab="analytics"
+            label="📊 Analytics"
+            isActive={activeTab === 'analytics'}
+            onClick={() => setActiveTab('analytics')}
+          />
+        </div>
+
+        {/* Rules Overview Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <StatCard
+            title="Total Rules"
+            value={ruleStats.totalRules}
+            description="Configured rules"
+            icon="📋"
+            variant="default"
+          />
+          <StatCard
+            title="Active Rules"
+            value={ruleStats.activeRules}
+            description="Currently running"
+            icon="✅"
+            variant="success"
+          />
+          <StatCard
+            title="Processed Today"
+            value={ruleStats.processedToday}
+            description="Leads auto-tagged"
+            icon="⚡"
+            variant="neon"
+            trend="+15% vs yesterday"
+          />
+          <StatCard
+            title="Automation Rate"
+            value={`${ruleStats.automationRate}%`}
+            description="Rules efficiency"
+            icon="🤖"
+            variant="success"
+            trend="+3% this week"
+          />
+        </div>
+
+        {/* Rules Tab */}
+        {activeTab === 'rules' && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-white">Active Tagging Rules</h2>
+              <div className="flex gap-3">
+                <NeonButton variant="secondary" size="sm">
+                  📊 Test Rules
+                </NeonButton>
+                <NeonButton variant="secondary" size="sm">
+                  📥 Import
+                </NeonButton>
+                <NeonButton variant="secondary" size="sm">
+                  📤 Export
+                </NeonButton>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              {taggingRules.map((rule) => (
+                <GlassCard key={rule.id} className="p-6">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-start gap-4">
+                      <div className={`w-3 h-3 rounded-full mt-2 ${rule.active ? 'bg-green-500' : 'bg-gray-500'}`}></div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <h3 className="text-lg font-semibold text-white">{rule.name}</h3>
+                          <Badge variant={rule.active ? 'success' : 'default'}>
+                            {rule.active ? 'Active' : 'Inactive'}
+                          </Badge>
+                          <Badge variant="neon" size="sm">
+                            Priority {rule.priority}
+                          </Badge>
+                        </div>
+                        <p className="text-gray-400 text-sm mb-3">{rule.description}</p>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                          <div>
+                            <p className="text-gray-400 mb-1">Condition:</p>
+                            <code className="text-neon-green bg-black/30 px-2 py-1 rounded text-xs">
+                              {rule.condition}
+                            </code>
+                          </div>
+                          <div>
+                            <p className="text-gray-400 mb-1">Action:</p>
+                            <p className="text-white">{rule.action}</p>
+                          </div>
+                          <div>
+                            <p className="text-gray-400 mb-1">Tags Applied:</p>
+                            <div className="flex flex-wrap gap-1">
+                              {rule.tags.map((tag) => (
+                                <Badge key={tag} variant="default" size="sm">
+                                  {tag}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex gap-2">
+                      <NeonButton variant="secondary" size="sm">
+                        ✏️ Edit
+                      </NeonButton>
+                      <NeonButton variant="secondary" size="sm">
+                        📊 Stats
+                      </NeonButton>
+                      <button className="text-gray-400 hover:text-red-400 p-2">
+                        🗑️
+                      </button>
+                    </div>
+                  </div>
+                </GlassCard>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Create Tab */}
+        {activeTab === 'create' && (
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold text-white">Create New Tagging Rule</h2>
+            
+            <GlassCard className="p-8">
+              <form className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <FormField label="Rule Name" required>
+                    <Input
+                      placeholder="Enter rule name..."
+                    />
+                  </FormField>
+                  
+                  <FormField label="Priority">
+                    <select className="w-full p-3 bg-white/5 border border-white/10 rounded-lg text-white focus:border-neon-green focus:ring-1 focus:ring-neon-green">
+                      <option value={1}>Priority 1 (Highest)</option>
+                      <option value={2}>Priority 2</option>
+                      <option value={3}>Priority 3</option>
+                      <option value={4}>Priority 4 (Lowest)</option>
+                    </select>
+                  </FormField>
+                </div>
+
+                <FormField label="Description">
+                  <textarea
+                    className="w-full p-3 bg-white/5 border border-white/10 rounded-lg text-white focus:border-neon-green focus:ring-1 focus:ring-neon-green resize-none"
+                    rows={3}
+                    placeholder="Describe what this rule does and when it should be applied..."
+                  />
+                </FormField>
+
+                <FormField label="Condition" required>
+                  <textarea
+                    className="w-full p-3 bg-white/5 border border-white/10 rounded-lg text-white focus:border-neon-green focus:ring-1 focus:ring-neon-green resize-none font-mono text-sm"
+                    rows={3}
+                    placeholder="Example: Credit Score >= 750 AND State in [CA, NY, TX]"
+                  />
+                  <p className="text-xs text-gray-400 mt-1">
+                    Use field names like: Credit Score, Email, Phone, State, City, etc.
+                  </p>
+                </FormField>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <FormField label="Action Type" required>
+                    <select className="w-full p-3 bg-white/5 border border-white/10 rounded-lg text-white focus:border-neon-green focus:ring-1 focus:ring-neon-green">
+                      <option value="add_tags">Add Tags</option>
+                      <option value="assign_rep">Assign Representative</option>
+                      <option value="flag_review">Flag for Review</option>
+                      <option value="send_notification">Send Notification</option>
+                    </select>
+                  </FormField>
+
+                  <FormField label="Tags to Apply">
+                    <Input
+                      placeholder="premium, high-value, priority (comma separated)"
+                    />
+                  </FormField>
+                </div>
+
+                <div className="flex items-center gap-3 p-4 bg-white/5 rounded-lg">
+                  <input
+                    type="checkbox"
+                    id="activate"
+                    className="w-4 h-4 text-neon-green bg-transparent border-gray-300 rounded focus:ring-neon-green focus:ring-2"
+                  />
+                  <label htmlFor="activate" className="text-white">
+                    Activate rule immediately after creation
+                  </label>
+                </div>
+
+                <div className="flex gap-4 pt-6 border-t border-white/10">
+                  <NeonButton type="submit">
+                    ✅ Create Rule
+                  </NeonButton>
+                  <NeonButton type="button" variant="secondary">
+                    🧪 Test Rule
+                  </NeonButton>
+                  <NeonButton 
+                    type="button" 
+                    variant="secondary"
+                    onClick={() => setActiveTab('rules')}
+                  >
+                    Cancel
+                  </NeonButton>
+                </div>
+              </form>
+            </GlassCard>
+          </div>
+        )}
+
+        {/* Analytics Tab */}
+        {activeTab === 'analytics' && (
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold text-white">Rules Performance Analytics</h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <StatCard
+                title="Rules Executed"
+                value="1,247"
+                description="This month"
+                icon="⚡"
+                variant="neon"
+                trend="+18% vs last month"
+              />
+              <StatCard
+                title="Avg Processing Time"
+                value="142ms"
+                description="Per lead evaluation"
+                icon="⏱️"
+                variant="success"
+                trend="-25ms faster"
+              />
+              <StatCard
+                title="Error Rate"
+                value="0.02%"
+                description="Rule execution failures"
+                icon="✅"
+                variant="success"
+              />
+            </div>
+
+            <GlassCard className="p-6">
+              <h3 className="text-lg font-semibold text-white mb-6">Top Performing Rules</h3>
+              <div className="space-y-4">
+                {taggingRules.filter(r => r.active).map((rule, index) => (
+                  <div key={rule.id} className="flex items-center justify-between p-4 bg-white/5 rounded-lg">
+                    <div className="flex items-center gap-4">
+                      <div className="w-8 h-8 bg-neon-green/20 rounded-full flex items-center justify-center text-xs font-bold text-neon-green">
+                        {index + 1}
+                      </div>
+                      <div>
+                        <p className="font-medium text-white">{rule.name}</p>
+                        <p className="text-xs text-gray-400">Priority {rule.priority}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-bold text-neon-green">{Math.floor(Math.random() * 500) + 100} executions</p>
+                      <p className="text-xs text-gray-400">{Math.floor(Math.random() * 30) + 85}% success rate</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </GlassCard>
+          </div>
+        )}
+
+      </div>
+    </AppShell>
+  );
+}

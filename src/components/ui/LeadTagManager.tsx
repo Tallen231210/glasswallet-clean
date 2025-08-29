@@ -1,16 +1,14 @@
 'use client';
 
 import React, { useState } from 'react';
-import { 
-  GlassCard, 
-  NeonButton, 
-  Badge, 
-  Select,
-  FormField,
-  Input,
-  Alert,
-  useToast
-} from '@/components/ui';
+import { GlassCard } from './GlassCard';
+import { NeonButton } from './NeonButton';
+import { Badge } from './Badge';
+import { Select } from './Select';
+import { FormField } from './FormField';
+import { Input } from './Input';
+import { Alert } from './Alert';
+import { useToast } from './Toast';
 
 interface LeadTag {
   id: string;
@@ -295,4 +293,4 @@ export const LeadTagManager: React.FC<LeadTagManagerProps> = ({
       )}
     </GlassCard>
   );
-};
+};export default LeadTagManager;

@@ -569,3 +569,5 @@ export const MetricDisplay: React.FC<MetricDisplayProps> = ({
     </div>
   );
 };
+
+export default MetricDisplay;

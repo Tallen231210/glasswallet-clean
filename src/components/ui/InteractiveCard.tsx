@@ -357,4 +357,4 @@ export const AnimatedCounter: React.FC<AnimatedCounterProps> = ({
       {prefix}{currentValue.toFixed(decimals)}{suffix}
     </span>
   );
-};
+};export default InteractiveCard;
