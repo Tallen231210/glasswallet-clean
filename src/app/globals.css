@@ -502,6 +502,55 @@ body::before {
     0 0 30px rgba(0, 255, 136, 0.1);
 }
 
+/* Rainbow Gradient Border Animation */
+@keyframes rainbow-border {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.rainbow-border-hover {
+  position: relative;
+  overflow: hidden;
+}
+
+.rainbow-border-hover::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  padding: 2px;
+  background: conic-gradient(
+    from 0deg,
+    #ff6b6b,
+    #4ecdc4,
+    #45b7d1,
+    #96ceb4,
+    #ffeaa7,
+    #fab1a0,
+    #fd79a8,
+    #fdcb6e,
+    #6c5ce7,
+    #a29bfe,
+    #ff6b6b
+  );
+  border-radius: inherit;
+  opacity: 0;
+  transform: rotate(0deg);
+  transition: opacity 0.3s ease;
+  animation-duration: 3s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  z-index: -1;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: subtract;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: source-out;
+}
+
+.rainbow-border-hover:hover::before {
+  opacity: 1;
+  animation-name: rainbow-border;
+}
+
 /* Futuristic Sidebar */
 .sidebar-nav-item {
   position: relative;

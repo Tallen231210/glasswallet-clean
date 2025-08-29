@@ -85,7 +85,7 @@ export function AppLayout({ children }: AppLayoutProps) {
               router.push(item.path);
               setIsMobileMenuOpen(false);
             }}
-            className={`sidebar-nav-item w-full flex items-center gap-3 text-left rounded-lg font-medium transition-smooth ${
+            className={`sidebar-nav-item rainbow-border-hover w-full flex items-center gap-3 text-left rounded-lg font-medium transition-smooth ${
               item.type === 'sub' 
                 ? 'sidebar-nav-sub ml-6 px-3 py-2 text-sm' // Sub-items: indented, smaller padding, smaller text
                 : 'px-4 py-3' // Main items: normal padding
