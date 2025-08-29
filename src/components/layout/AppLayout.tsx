@@ -1,0 +1,189 @@
+'use client';
+
+import React, { useState } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
+import { useUser, SignOutButton } from '@clerk/nextjs';
+
+interface AppLayoutProps {
+  children: React.ReactNode;
+}
+
+export function AppLayout({ children }: AppLayoutProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const { user, isLoaded } = useUser();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const isActive = (path: string) => {
+    if (path === '/dashboard') return pathname === '/dashboard';
+    return pathname.startsWith(path);
+  };
+
+  const navigationItems = [
+    { path: '/dashboard', label: 'Dashboard', icon: 'dashboard', type: 'main' },
+    { path: '/leads', label: 'Leads', icon: 'users', type: 'main' },
+    { path: '/leads/new', label: 'Add Lead', icon: 'plus', type: 'sub', parent: 'leads' },
+    { path: '/leads/analytics', label: 'Analytics', icon: 'chart', type: 'sub', parent: 'leads' },
+  ];
+
+  const renderIcon = (iconName: string, isActive: boolean) => {
+    const iconClass = `w-5 h-5 transition-smooth text-neon-green`;
+    
+    switch (iconName) {
+      case 'dashboard':
+        return (
+          <svg className={iconClass} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 5v4m4-4v4m4-4v4" />
+          </svg>
+        );
+      case 'users':
+        return (
+          <svg className={iconClass} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+          </svg>
+        );
+      case 'plus':
+        return (
+          <svg className={iconClass} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          </svg>
+        );
+      case 'chart':
+        return (
+          <svg className={iconClass} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+        );
+      default:
+        return null;
+    }
+  };
+
+  const SidebarContent = () => (
+    <>
+      {/* Logo Section */}
+      <div className="p-6 border-b border-gray-700/50">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 bg-gradient-to-r from-green-400 to-green-600 rounded-xl flex items-center justify-center relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse-neon"></div>
+            <span className="text-black font-bold text-xl relative z-10">G</span>
+          </div>
+          <div>
+            <h1 className="text-white font-black text-xl tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>GlassWallet</h1>
+            <p className="text-micro text-neon-green">Credit Platform</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Navigation Menu */}
+      <nav className="flex-1 p-4 space-y-1">
+        {navigationItems.map((item) => (
+          <button
+            key={item.path}
+            onClick={() => {
+              router.push(item.path);
+              setIsMobileMenuOpen(false);
+            }}
+            className={`sidebar-nav-item w-full flex items-center gap-3 text-left rounded-lg font-medium transition-smooth ${
+              item.type === 'sub' 
+                ? 'sidebar-nav-sub ml-6 px-3 py-2 text-sm' // Sub-items: indented, smaller padding, smaller text
+                : 'px-4 py-3' // Main items: normal padding
+            } ${
+              isActive(item.path)
+                ? 'active bg-gradient-to-r from-green-500/20 to-green-600/20 border border-green-500/30 text-green-400'
+                : 'hover:bg-gray-800/50 text-gray-300 hover:text-white'
+            }`}
+          >
+            {item.type === 'sub' ? (
+              // Sub-items: smaller icon, different style
+              <div className="w-4 h-4 flex items-center justify-center">
+                <div className="w-1 h-1 bg-neon-green rounded-full"></div>
+              </div>
+            ) : (
+              // Main items: full icon
+              renderIcon(item.icon, isActive(item.path))
+            )}
+            <span className={`font-medium ${item.type === 'sub' ? 'text-sm' : 'text-body'}`}>
+              {item.label}
+            </span>
+          </button>
+        ))}
+      </nav>
+
+      {/* User Profile Section */}
+      <div className="p-4 border-t border-gray-700/50">
+        <div className="glass-card p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-r from-green-400 to-green-600 rounded-full flex items-center justify-center relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse-neon"></div>
+              <span className="text-black text-sm font-bold relative z-10">
+                {user?.firstName?.[0] || user?.emailAddresses?.[0]?.emailAddress?.[0] || 'U'}
+              </span>
+            </div>
+            <div className="flex-1">
+              <p className="text-white text-sm font-semibold">
+                {user?.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : 'User'}
+              </p>
+              <p className="text-green-400 text-xs">
+                {user?.emailAddresses?.[0]?.emailAddress || 'Active Account'}
+              </p>
+            </div>
+            <SignOutButton>
+              <button className="text-gray-400 hover:text-neon-green text-xs transition-smooth uppercase tracking-wide">
+                Exit
+              </button>
+            </SignOutButton>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+
+  return (
+    <div className="min-h-screen bg-black text-white flex">
+      {/* Mobile Menu Button */}
+      <button
+        className="mobile-menu-button"
+        onClick={() => setIsMobileMenuOpen(true)}
+      >
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+
+      {/* Mobile Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="mobile-sidebar-overlay md:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
+      {/* Desktop Sidebar */}
+      <div className="hidden md:flex w-64 futuristic-sidebar flex-col">
+        <SidebarContent />
+      </div>
+
+      {/* Mobile Sidebar */}
+      <div className={`mobile-sidebar md:hidden futuristic-sidebar flex flex-col ${isMobileMenuOpen ? 'open' : ''}`}>
+        <div className="flex justify-end p-4">
+          <button
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="text-gray-400 hover:text-white transition-smooth"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <SidebarContent />
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 bg-black md:ml-0">
+        {children}
+      </div>
+    </div>
+  );
+}
