@@ -24,6 +24,7 @@ export function AppLayout({ children }: AppLayoutProps) {
     { path: '/leads', label: 'Leads', icon: 'users', type: 'main' },
     { path: '/leads/new', label: 'Add Lead', icon: 'plus', type: 'sub', parent: 'leads' },
     { path: '/leads/analytics', label: 'Analytics', icon: 'chart', type: 'sub', parent: 'leads' },
+    { path: '/leads/rules', label: 'Auto-Tagging Rules', icon: 'robot', type: 'sub', parent: 'leads' },
   ];
 
   const renderIcon = (iconName: string, isActive: boolean) => {
@@ -53,6 +54,12 @@ export function AppLayout({ children }: AppLayoutProps) {
         return (
           <svg className={iconClass} fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+        );
+      case 'robot':
+        return (
+          <svg className={iconClass} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
           </svg>
         );
       default:
