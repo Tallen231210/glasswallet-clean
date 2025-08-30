@@ -4,6 +4,7 @@ import React, { useState, memo, useMemo, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useUser, SignOutButton } from '@clerk/nextjs';
 import { PerformanceMonitor } from '@/components/performance/PerformanceMonitor';
+import { DemoStatusBanner } from '@/components/demo/DemoStatusBanner';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -210,6 +211,9 @@ const AppLayoutComponent = ({ children }: AppLayoutProps) => {
       <div className="flex-1 bg-black md:ml-0">
         {children}
       </div>
+      
+      {/* Demo Status Banner */}
+      <DemoStatusBanner />
       
       {/* Performance Monitor - Only in development */}
       <PerformanceMonitor enabled={process.env.NODE_ENV === 'development'} />

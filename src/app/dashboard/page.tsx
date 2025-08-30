@@ -10,6 +10,7 @@ import { GlassCard } from '@/components/ui/GlassCard';
 import { NeonButton } from '@/components/ui/NeonButton';
 import { StatCard } from '@/components/ui/StatCard';
 import { Badge } from '@/components/ui/Badge';
+import { CreditBalance } from '@/components/billing/CreditBalance';
 
 // Enhanced Progress component
 const Progress = ({ value, className }: { value: number; className?: string }) => (
@@ -119,6 +120,15 @@ export default function DashboardPage() {
             icon="📊"
             variant="success"
             trend="+15 points"
+          />
+        </div>
+
+        {/* Credit Balance Display */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold text-white">💳 Credit Balance</h3>
+          <CreditBalance 
+            compact={true} 
+            onPurchaseCredits={() => router.push('/billing')} 
           />
         </div>
 

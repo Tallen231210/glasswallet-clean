@@ -276,8 +276,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* Main Navigation Item */}
         <div
           className={cn(
-            'group relative flex items-center gap-3 p-3 rounded-xl transition-all duration-300 cursor-pointer',
-            'hover:bg-white/10 hover:scale-[1.02]',
+            'group relative flex items-center gap-3 p-3 rounded-xl transition-all duration-300 cursor-pointer overflow-hidden',
+            'hover:bg-white/10',
             active 
               ? 'bg-gradient-to-r from-neon-green/20 to-transparent border border-neon-green/30 text-white shadow-lg shadow-neon-green/10' 
               : 'text-gray-300 hover:text-white'
@@ -346,8 +346,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <div
                 key={child.id}
                 className={cn(
-                  'flex items-center gap-3 p-2 rounded-lg transition-all duration-200 cursor-pointer group',
-                  'hover:bg-white/5 hover:scale-[1.01]',
+                  'flex items-center gap-3 p-2 rounded-lg transition-all duration-200 cursor-pointer group overflow-hidden',
+                  'hover:bg-white/5',
                   pathname === child.href || pathname.startsWith(child.href)
                     ? 'bg-neon-green/10 text-neon-green border border-neon-green/20 shadow-sm'
                     : 'text-gray-400 hover:text-white'
