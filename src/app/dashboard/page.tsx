@@ -43,18 +43,20 @@ export default function DashboardPage() {
 
   return (
     <AppLayout>
+      <div className="min-h-screen bg-black">
         {/* Header */}
-        <div className="p-8 border-b border-gray-700/30 relative overflow-hidden">
+        <div className="p-6 md:p-8 border-b border-gray-700/30 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-green-400/5 to-transparent"></div>
-          <div className="space-element relative z-10">
-            <h1 className="text-display mb-4 text-white">
+          <div className="max-w-7xl mx-auto relative z-10">
+            <h1 className="text-3xl font-bold text-white mb-2">
               Business Dashboard
             </h1>
-            <p className="text-body-large text-gray-300 font-light tracking-wide">Welcome back — here's your platform overview</p>
+            <p className="text-gray-400">Welcome back — here's your platform overview</p>
           </div>
         </div>
 
-        <div className="p-8 space-y-8">
+        {/* Main Content */}
+        <div className="max-w-7xl mx-auto p-6 md:p-8 space-y-8">
         
         {/* Welcome Section */}
         <div className="space-component">
@@ -258,6 +260,7 @@ export default function DashboardPage() {
           </GlassCard>
         )}
         </div>
+      </div>
     </AppLayout>
   );
 }
