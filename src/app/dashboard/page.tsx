@@ -32,8 +32,7 @@ export default function DashboardPage() {
   const isBusinessOwner = true;
   const isSalesRep = false;
   
-  // Different credit balances for different account types  
-  const [creditBalance] = useState(isBusinessOwner ? 127 : 25);
+  // Credit balance will be handled by CreditBalance component
   
   // Mock stats
   const stats = {
@@ -85,15 +84,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Key Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <StatCard
-            title="Credit Balance"
-            value={creditBalance}
-            description="Available credits"
-            icon="💳"
-            variant="neon"
-            trend={isBusinessOwner ? "+15 this week" : "+5 this week"}
-          />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           
           <StatCard
             title={isBusinessOwner ? "Team Leads" : "My Leads"}
@@ -181,7 +172,7 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-white">Credit Usage</h3>
               <Badge variant="neon">
-                {creditBalance} remaining
+                Current Month
               </Badge>
             </div>
             <div className="space-y-4">

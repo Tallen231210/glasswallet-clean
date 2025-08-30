@@ -27,6 +27,7 @@ const AppLayoutComponent = ({ children }: AppLayoutProps) => {
     { path: '/leads/new', label: 'Add Lead', icon: 'plus', type: 'sub', parent: 'leads' },
     { path: '/leads/analytics', label: 'Analytics', icon: 'chart', type: 'sub', parent: 'leads' },
     { path: '/leads/rules', label: 'Auto-Tagging Rules', icon: 'robot', type: 'sub', parent: 'leads' },
+    { path: '/billing', label: 'Billing & Credits', icon: 'billing', type: 'main' },
     { path: '/pixels', label: 'Pixel Integration', icon: 'pixel', type: 'main' },
     { path: '/widgets', label: 'JavaScript Widgets', icon: 'widget', type: 'main' },
     { path: '/webhooks', label: 'Webhook Management', icon: 'webhook', type: 'main' },
@@ -77,6 +78,12 @@ const AppLayoutComponent = ({ children }: AppLayoutProps) => {
         return (
           <svg className={iconClass} fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM7 3H5a2 2 0 00-2 2v12a4 4 0 004 4h2V3zM17 21a4 4 0 004-4V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4zM17 3h2a2 2 0 012 2v12a4 4 0 01-4 4h-2V3z" />
+          </svg>
+        );
+      case 'billing':
+        return (
+          <svg className={iconClass} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
           </svg>
         );
       case 'webhook':
