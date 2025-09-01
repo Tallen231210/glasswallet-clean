@@ -44,7 +44,6 @@ export const CreditPackages: React.FC<CreditPackagesProps> = ({
         {packages.map((pkg) => {
           const savings = calculateSavings(pkg.id);
           const isSelected = selectedPackageId === pkg.id;
-          const isPopular = pkg.popular;
 
           return (
             <GlassCard
@@ -56,18 +55,9 @@ export const CreditPackages: React.FC<CreditPackagesProps> = ({
                   ? 'border-neon-green shadow-neon-green/20 shadow-lg' 
                   : 'hover:border-white/30'
                 }
-                ${isPopular ? 'border-blue-400/50' : ''}
               `}
               onClick={() => handlePackageSelect(pkg)}
             >
-              {/* Popular Badge */}
-              {isPopular && (
-                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                  <Badge variant="neon" className="px-3 py-1">
-                    ⭐ Most Popular
-                  </Badge>
-                </div>
-              )}
 
               {/* Selected Badge */}
               {isSelected && (
