@@ -121,7 +121,7 @@ const AppLayoutComponent = ({ children }: AppLayoutProps) => {
             }}
             className={`sidebar-nav-item rainbow-border-hover w-full flex items-center gap-3 text-left rounded-lg font-medium transition-smooth ${
               item.type === 'sub' 
-                ? 'sidebar-nav-sub ml-6 px-3 py-2 text-sm' // Sub-items: indented, smaller padding, smaller text
+                ? 'sidebar-nav-sub ml-4 mr-2 px-3 py-2 text-sm' // Sub-items: reduced indent, added right margin, smaller padding
                 : 'px-4 py-3' // Main items: normal padding
             } ${
               isActive(item.path)

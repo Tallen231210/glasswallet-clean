@@ -77,7 +77,7 @@ export const CreditPackages: React.FC<CreditPackagesProps> = ({
                 </div>
               )}
 
-              <div className="space-y-6 pt-2">
+              <div className="space-y-4">
                 {/* Package Name & Price */}
                 <div className="text-center">
                   <h3 className="text-xl font-bold text-white mb-2">{pkg.name}</h3>

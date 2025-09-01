@@ -87,7 +87,7 @@ const StatCardComponent: React.FC<StatCardProps> = ({
   }, [change, trend, loading]);
 
   return (
-    <GlassCard className={cn('p-6', className)} {...props}>
+    <GlassCard className={cn(className)} {...props}>
       <div className="flex items-center justify-between">
         <div className="flex-1">
           <p className="text-gray-400 text-sm font-medium mb-1">

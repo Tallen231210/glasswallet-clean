@@ -41,6 +41,7 @@ export interface GlassCardProps {
   className?: string;
   hover?: boolean;
   neonBorder?: boolean;
+  padding?: 'compact' | 'normal' | 'spacious' | 'none';
 }
 
 export interface NeonButtonProps {

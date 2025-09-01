@@ -90,6 +90,35 @@ body::before {
   opacity: 0.5;
 }
 
+/* ========================================
+   GLASSWALLET SPACING STANDARDS
+   ========================================
+   
+   These standards ensure consistent spacing throughout the app:
+   
+   1. GlassCard Components:
+      - Default padding: 1.5rem (24px) - Comfortable for most content
+      - Compact variant: 1rem (16px) - For tight spaces
+      - Spacious variant: 2rem (32px) - For important/featured content
+      - No-padding variant: 0 - For custom content with full control
+   
+   2. Usage Guidelines:
+      - Use default GlassCard padding for most components
+      - Avoid adding additional padding (px-*) to GlassCard className
+      - Use padding variants via GlassCard padding prop
+      - Only add custom padding when absolutely necessary
+   
+   3. Navigation Spacing:
+      - Main items: px-4 py-3 (16px horizontal, 12px vertical)  
+      - Sub-items: ml-4 mr-2 px-3 py-2 (reduced indent, contained borders)
+      - Rainbow borders use box-sizing: border-box to stay within bounds
+   
+   4. Container Patterns:
+      - Page headers: p-6 md:p-8 border-b border-gray-700/30
+      - Main content: max-w-7xl mx-auto p-6 md:p-8 space-y-8
+      - Responsive: p-6 on mobile, p-8 on desktop (md+)
+   ======================================== */
+
 /* Enhanced Glass Card Utility Classes - Pure Black Style */
 .glass-card {
   background: rgba(0, 0, 0, 0.8);
@@ -103,6 +132,7 @@ body::before {
   position: relative;
   overflow: hidden;
   transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  padding: 1.5rem; /* 24px - Default comfortable padding for all glass cards */
 }
 
 /* Holographic shimmer effect */
@@ -150,6 +180,19 @@ body::before {
   background: rgba(255, 255, 255, 0.08);
   transform: translateY(-2px);
   box-shadow: var(--glass-shadow), var(--neon-glow-shadow);
+}
+
+/* Glass Card Padding Variants */
+.glass-card-compact {
+  padding: 1rem; /* 16px - Compact padding for tight spaces */
+}
+
+.glass-card-spacious {
+  padding: 2rem; /* 32px - Spacious padding for important content */
+}
+
+.glass-card-no-padding {
+  padding: 0; /* No padding - for custom content that needs full control */
 }
 
 /* Neon Effects */
@@ -538,15 +581,18 @@ body::before {
   }
 }
 
+/* Rainbow border hover - contained within element bounds */
 .rainbow-border-hover {
   border: 2px solid transparent;
   transition: all 0.3s ease;
+  box-sizing: border-box; /* Ensure border stays within bounds */
 }
 
 .rainbow-border-hover:hover {
   animation: rainbow-spin 2s linear infinite;
   border-width: 2px;
   border-style: solid;
+  box-sizing: border-box; /* Ensure border stays within bounds */
 }
 
 /* Toast Animation */
