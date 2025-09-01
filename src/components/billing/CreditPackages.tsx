@@ -49,8 +49,9 @@ export const CreditPackages: React.FC<CreditPackagesProps> = ({
           return (
             <GlassCard
               key={pkg.id}
+              padding="none"
               className={`
-                relative transition-all duration-300 cursor-pointer hover:scale-105 hover:shadow-2xl
+                relative transition-all duration-300 cursor-pointer hover:scale-105 hover:shadow-2xl min-h-[500px]
                 ${isSelected 
                   ? 'border-neon-green shadow-neon-green/20 shadow-lg' 
                   : 'hover:border-white/30'
@@ -77,83 +78,88 @@ export const CreditPackages: React.FC<CreditPackagesProps> = ({
                 </div>
               )}
 
-              <div className="space-y-4">
-                {/* Package Name & Price */}
-                <div className="text-center">
-                  <h3 className="text-xl font-bold text-white mb-2">{pkg.name}</h3>
-                  <div className="space-y-1">
-                    <div className="text-3xl font-bold text-neon-green">
-                      {formatCurrency(pkg.price)}
-                    </div>
-                    <div className="text-sm text-gray-400">
-                      {formatCurrency(pkg.pricePerCredit)} per credit
+              <div className="flex flex-col h-full p-6">
+                {/* Top Content Area */}
+                <div className="flex-1 space-y-6">
+                  {/* Package Name & Price */}
+                  <div className="text-center">
+                    <h3 className="text-xl font-bold text-white mb-2">{pkg.name}</h3>
+                    <div className="space-y-1">
+                      <div className="text-3xl font-bold text-neon-green">
+                        {formatCurrency(pkg.price)}
+                      </div>
+                      <div className="text-sm text-gray-400">
+                        {formatCurrency(pkg.pricePerCredit)} per credit
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Credits Info */}
-                <div className="text-center space-y-2">
-                  <div className="flex items-center justify-center gap-2">
-                    <span className="text-2xl font-bold text-white">
-                      {pkg.totalCredits}
-                    </span>
-                    <span className="text-gray-400">credits</span>
-                  </div>
-                  
-                  {pkg.bonusCredits > 0 && (
-                    <div className="inline-flex items-center gap-1 px-2 py-1 bg-green-500/20 border border-green-500/30 rounded-full">
-                      <span className="text-green-400 text-xs">
-                        🎁 +{pkg.bonusCredits} bonus credits
+                  {/* Credits Info */}
+                  <div className="text-center space-y-2">
+                    <div className="flex items-center justify-center gap-2">
+                      <span className="text-2xl font-bold text-white">
+                        {pkg.totalCredits}
                       </span>
+                      <span className="text-gray-400">credits</span>
                     </div>
-                  )}
+                    
+                    {pkg.bonusCredits > 0 && (
+                      <div className="inline-flex items-center gap-1 px-2 py-1 bg-green-500/20 border border-green-500/30 rounded-full">
+                        <span className="text-green-400 text-xs">
+                          🎁 +{pkg.bonusCredits} bonus credits
+                        </span>
+                      </div>
+                    )}
 
-                  {savings.amount > 0 && (
-                    <div className="text-sm text-green-400">
-                      Save {formatCurrency(savings.amount)} ({Math.round(savings.percentage)}%)
-                    </div>
-                  )}
+                    {savings.amount > 0 && (
+                      <div className="text-sm text-green-400">
+                        Save {formatCurrency(savings.amount)} ({Math.round(savings.percentage)}%)
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Description */}
+                  <p className="text-gray-400 text-sm text-center">
+                    {pkg.description}
+                  </p>
+
+                  {/* Features List */}
+                  <div className="space-y-2">
+                    {pkg.features.map((feature, index) => (
+                      <div key={index} className="flex items-start gap-2 text-sm">
+                        <span className="text-neon-green text-xs mt-1">✓</span>
+                        <span className="text-gray-300">{feature}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
-                {/* Description */}
-                <p className="text-gray-400 text-sm text-center">
-                  {pkg.description}
-                </p>
-
-                {/* Features List */}
-                <div className="space-y-2">
-                  {pkg.features.map((feature, index) => (
-                    <div key={index} className="flex items-start gap-2 text-sm">
-                      <span className="text-neon-green text-xs mt-1">✓</span>
-                      <span className="text-gray-300">{feature}</span>
-                    </div>
-                  ))}
+                {/* Bottom Button - Always at bottom */}
+                <div className="mt-6">
+                  <NeonButton
+                    onClick={() => handlePackageSelect(pkg)}
+                    disabled={loading}
+                    className={`
+                      w-full transition-all duration-300
+                      ${isSelected 
+                        ? 'bg-neon-green text-black' 
+                        : ''
+                      }
+                    `}
+                    size="sm"
+                  >
+                    {loading && selectedPackageId === pkg.id ? (
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                        Processing...
+                      </div>
+                    ) : isSelected ? (
+                      'Selected'
+                    ) : (
+                      'Select Package'
+                    )}
+                  </NeonButton>
                 </div>
-
-                {/* Select Button */}
-                <NeonButton
-                  onClick={() => handlePackageSelect(pkg)}
-                  disabled={loading}
-                  className={`
-                    w-full transition-all duration-300
-                    ${isSelected 
-                      ? 'bg-neon-green text-black' 
-                      : ''
-                    }
-                  `}
-                  size="sm"
-                >
-                  {loading && selectedPackageId === pkg.id ? (
-                    <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-                      Processing...
-                    </div>
-                  ) : isSelected ? (
-                    'Selected'
-                  ) : (
-                    'Select Package'
-                  )}
-                </NeonButton>
               </div>
             </GlassCard>
           );
